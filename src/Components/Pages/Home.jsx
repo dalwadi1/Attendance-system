@@ -9,6 +9,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
@@ -22,26 +23,30 @@ const Home = () => {
                 ]}
             />
             <div className='h-screen bg-slate-500'>
-                <div className='lg:container flex justify-between sticky top-3 px-6 mx-auto '>
+                {/* navbar */}
+                <div className='container flex justify-between sticky top-3 px-6 mx-auto lg:w-11/12'>
                     <div className='flex'>
                         <div className='md:w-12 w-10 rounded-full cursor-pointer'>
-                            <img src="./images/R3/logo.png" alt="" />
+                            <Link to='/'><img src="./images/R3/logo.png" alt="" /></Link>
                         </div>
                         {/* <h1 className='mt-2'>Attendance</h1>
                         <h1 className='mt-6 -ml-20'>System</h1> */}
                     </div>
-                    <button><MdOutlineManageAccounts className='md:text-4xl text-3xl' color='blue' /></button>
+                    <button>
+                        <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl text-3xl' color='blue' /></Link>
+                    </button>
+
                 </div>
-                <div className='px-6 container flex items-center -m-12 h-screen mx-auto'>
-                    <div className=' sm:w-auto grow'>
-                        <h1 className='md:text-3xl text-slate-800 drop-shadow-2xl font-extrabold' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
-                        <h1>Lorem ipsum dolor, sit amet consectetur adipisicing elit. <br />Nesciunt illum enim dolorum sequi voluptas dolore quaerat pariatur modi nemo consectetur!</h1>
+                <div className='px-6 container mx-auto flex items-center -m-12 h-screen md:w-11/12'>
+                    <div className='sm:w-auto grow'>
+                        <h1 className='lg:text-5xl sm:text-3xl text-slate-800 drop-shadow-2xl font-extrabold' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
+                        <h1 className='text-xl'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. <br />Nesciunt illum enim dolorum sequi voluptas dolore quaerat <br /> pariatur modi nemo consectetur!</h1>
                         <div className='mt-9 flex'>
-                            <button className='md:bg-slate-800 rounded-full shadow-2xl p-4 text-white hover:bg-violet-900  flex mx-0' style={{ fontFamily: 'Josefin Sans' }}>Gets start</button>
-                            <button className='md:bg-slate-800 rounded-full shadow-2xl p-4 text-white hover:bg-violet-900  flex mx-3' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
+                            <button className='md:bg-slate-700 rounded-full shadow-2xl p-2 text-white hover:bg-black  flex mx-0' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
+                            <button className='md:bg-slate-700 rounded-full shadow-2xl p-2 text-white hover:bg-black  flex mx-3' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
                         </div>
                     </div>
-                    <div className='h-auto sm:max-w-96 md:max-w-96'>
+                    <div className='h-auto sm:max-w-96 md:max-w-96 '>
                         <Swiper
                             spaceBetween={30}
                             centeredSlides={true}
@@ -64,7 +69,7 @@ const Home = () => {
                     </div>
 
                 </div>
-            </div>
+            </div >
         </>
     )
 }
