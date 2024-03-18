@@ -30,7 +30,7 @@ const SignUp = () => {
                 </div >
 
                 <div className='-mt-12 h-screen flex justify-center items-center mx-auto container mr-14'>
-                    <img src='./images/signup.png' className='h-96' alt="" />
+                    <img src='./images/R2/signup.png' className='h-96' alt="" />
                     <form className='w-96'>
                         {/* <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" /> */}
                         <h1 className="h4 mb-3 fw-normal text-white text-center" style={{ fontFamily: 'Josefin Sans' }}>Create Account</h1>

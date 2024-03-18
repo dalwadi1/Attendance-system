@@ -38,15 +38,7 @@ const Home = () => {
 
                 </div>
                 <div className='px-6 container mx-auto flex items-center -m-12 h-screen md:w-11/12'>
-                    <div className='sm:w-auto grow'>
-                        <h1 className='lg:text-5xl sm:text-3xl text-slate-800 drop-shadow-2xl font-extrabold' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
-                        <h1 className='text-xl'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. <br />Nesciunt illum enim dolorum sequi voluptas dolore quaerat <br /> pariatur modi nemo consectetur!</h1>
-                        <div className='mt-9 flex'>
-                            <button className='md:bg-slate-700 rounded-full shadow-2xl p-2 text-white hover:bg-black  flex mx-0' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
-                            <button className='md:bg-slate-700 rounded-full shadow-2xl p-2 text-white hover:bg-black  flex mx-3' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
-                        </div>
-                    </div>
-                    <div className='h-auto sm:max-w-96 md:max-w-96 '>
+                    <div className='h-auto sm:max-w-96 md:max-w-96'>
                         <Swiper
                             spaceBetween={30}
                             centeredSlides={true}
@@ -67,6 +59,15 @@ const Home = () => {
 
                         </Swiper>
                     </div>
+                    <div className='sm:w-auto grow lg:text-center'>
+                        <h1 className='text-2xl lg:text-5xl  text-slate-800 font-extrabold' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
+                        <h1 className='lg:text-xl text-xs'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. <br />Nesciunt illum enim dolorum sequi voluptas dolore quaerat <br /> pariatur modi nemo consectetur!</h1>
+                        <div className='mt-9 flex lg:justify-center'>
+                            <button className='md:bg-slate-700 rounded-full shadow-2xl lg:p-3 p-2 text-white hover:bg-black  flex mx-0' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
+                            <button className='md:bg-slate-700 rounded-full shadow-2xl lg:p-3 p-2 text-white hover:bg-black  flex mx-3' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
+                        </div>
+                    </div>
+
 
                 </div>
             </div >
