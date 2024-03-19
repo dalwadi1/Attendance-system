@@ -1,11 +1,10 @@
 {
-  "name": "Attendance-system-with-face-api",
+  "name": "Attendance-system",
   "homepage": "https://Dalwadi1.github.oi/Attendance-system-with-face-api",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
