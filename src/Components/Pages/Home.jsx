@@ -25,15 +25,14 @@ const Home = () => {
             <div className='h-screen bg-slate-500'>
                 {/* navbar */}
                 <div className='container flex justify-between sticky top-3 px-20 mx-auto lg:w-11/12'>
-                    <div className='flex'>
-                        <div className='md:w-12 w-10 rounded-full cursor-pointer'>
-                            <Link to='/'><img src="./images/R3/logo.png" alt="" /></Link>
+                    <div className='flex items-center'>
+                        <div className='md:w-11 w-6 rounded-full cursor-pointer flex'>
+                            <Link to='/'><img src="./images/R3/logo1.png" alt="" /></Link>
                         </div>
-                        {/* <h1 className='mt-2'>Attendance</h1>
-                        <h1 className='mt-6 -ml-20'>System</h1> */}
+                        <h1 className='lg:text-2xl md:text-xl text-white xs:text-sm mt-3' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
                     <button>
-                        <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl text-3xl' color='blue' /></Link>
+                        <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
                     </button>
 
                 </div>
