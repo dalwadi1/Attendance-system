@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+node_modules
+.rpt2_cache
+.env*
+
+tmp
+proto
+weights_uncompressed
+weights_unused
+docs
+out
+build
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
