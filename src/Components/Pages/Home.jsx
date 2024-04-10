@@ -29,7 +29,7 @@ const Home = () => {
                         <div className='md:w-11 w-6 rounded-full cursor-pointer flex'>
                             <Link to='/'><img src="./images/R3/logo1.png" alt="" /></Link>
                         </div>
-                        <h1 className='lg:text-2xl md:text-xl text-white xs:text-sm mt-3' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
+                        <h1 className='lg:text-sm md:text-sm text-white xs:text-xs mt-4' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
                     <button>
                         <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
@@ -83,15 +83,15 @@ const Home = () => {
                     </div>
 
                     <div className='grow flex-col items-center justify-center  md:mt-0 xs:bg-slate-400 xs:py-7 px-3 rounded-t-3xl xs:-mt-32'>
-                        <h1 className='lg:text-5xl md:text-2xl text-slate-800 font-extrabold text-center xs:text-xl' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
+                        <h1 className='lg:text-5xl md:text-2xl text-slate-700 font-extrabold text-center xs:text-xl' style={{ fontFamily: 'Josefin Sans' }}>Face Recoginition based <br /> attendance system...</h1>
                         <div className='md:mt-3 '>
                             <h6 className='flex text-sm'><TiArrowForward fontSize={23} />Utilizes Face API or similar technology to detect and recognize faces accurately.</h6>
                             <h6 className='flex text-sm'><TiArrowForward fontSize={23} />Automatically records attendance based on facial recognition data.</h6>
                             <h6 className='flex text-sm'><TiArrowForward fontSize={23} />Implements multi-factor authentication to enhance security and prevent unauthorized access.</h6>
                         </div>
                         <div className='md:mt-9 xs:mt-7 flex lg:justify-self-center xs:justify-center'>
-                            <button className='xs:bg-gray-700 md:bg-slate-700 rounded-full shadow-2xl md:p-3 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
-                            <button className='xs:bg-gray-700 md:bg-slate-700 ml-4 rounded-full shadow-2xl md:p-3 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
+                            <button className='xs:bg-gray-700 md:bg-slate-700 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
+                            <button className='xs:bg-gray-700 md:bg-slate-700 ml-4 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
                         </div>
                     </div>
 

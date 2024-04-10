@@ -1,12 +1,54 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import GoogleFontLoader from 'react-google-font-loader';
 import { FcGoogle } from "react-icons/fc";
 import { BsFacebook } from "react-icons/bs";
+import * as faceapi from 'face-api.js';
+import Webcam from 'react-webcam';
 // import bgimg from './images/R2/image5.png'
 
 const SignUp = () => {
+    const webcamRef = useRef(null);
+    const [username, setUsername] = useState('');
+    const [registrationComplete, setRegistrationComplete] = useState(false);
+
+    useEffect(() => {
+        const loadModels = async () => {
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+            ]);
+        };
+
+        loadModels();
+    }, []);
+
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
+    };
+
+    const handleRegister = async () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        const image = await faceapi.fetchImage(imageSrc);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+        // { console.log(detections) }
+        { console.log(imageSrc) }
+        // { console.log(image) }
+
+        if (detections) {
+            const faceDescriptor = detections.descriptor;
+
+            // Store the username and face descriptor in localStorage or send to backend
+            localStorage.setItem('username', username);
+            localStorage.setItem('faceDescriptor', JSON.stringify(faceDescriptor));
+
+            setRegistrationComplete(true);
+        } else {
+            alert('No face detected. Please try again.');
+        }
+    };
     return (
         <>
             <GoogleFontLoader
@@ -23,7 +65,7 @@ const SignUp = () => {
                         <div className='md:w-11 w-6 rounded-full cursor-pointer flex'>
                             <Link to='/'><img src="./images/R3/logo1.png" alt="" /></Link>
                         </div>
-                        <h1 className='lg:text-2xl md:text-xl text-white xs:text-sm mt-3' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
+                        <h1 className='lg:text-sm md:text-sm text-white xs:text-xs mt-4' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
                     <button>
                         <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
@@ -31,8 +73,17 @@ const SignUp = () => {
 
                 </div>
 
-                <div className='-mt-12 h-screen flex justify-center items-center mx-auto container'>
-                    <img src='./images/R2/signup.png' className='h-96 xs:hidden md:block' alt="" />
+                <div className='-mt-12 h-screen md:flex justify-center items-center mx-auto container'>
+                    <div className='rounded-full mr-10'>
+                        <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            width={500}
+                            height={500}
+                            videoConstraints={{ facingMode: 'user' }}
+                        />
+                    </div>
                     <form className='w-96'>
                         <h1 className='xs:text-lg md:text-3xl xs:text-center md:text-left'>Sign Up</h1>
                         {/* <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" /> */}
