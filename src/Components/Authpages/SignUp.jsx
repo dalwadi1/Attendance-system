@@ -11,6 +11,8 @@ import Webcam from 'react-webcam';
 const SignUp = () => {
     const webcamRef = useRef(null);
     const [username, setUsername] = useState('');
+    const [useremail, setUserEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [registrationComplete, setRegistrationComplete] = useState(false);
 
     useEffect(() => {
@@ -33,8 +35,10 @@ const SignUp = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-        // { console.log(detections) }
-        { console.log(imageSrc) }
+        { console.log(username) }
+        { console.log(useremail) }
+        { console.log(password) }
+        { console.log(detections) }
         // { console.log(image) }
 
         if (detections) {
@@ -42,6 +46,8 @@ const SignUp = () => {
 
             // Store the username and face descriptor in localStorage or send to backend
             localStorage.setItem('username', username);
+            localStorage.setItem('useremail', useremail);
+            localStorage.setItem('userpassword', password);
             localStorage.setItem('faceDescriptor', JSON.stringify(faceDescriptor));
 
             setRegistrationComplete(true);
@@ -94,11 +100,11 @@ const SignUp = () => {
                         </div>
                         <h5 className='text-center text-white my-2 xs:text-sm md:text-lg' style={{ fontFamily: 'Josefin Sans' }}>OR</h5> */}
                         <div className="form-floating mt-4">
-                            <input type="email" className="form-control text-white bg-transparent" id="floatingInput" placeholder="name@example.com" />
+                            <input type="text" className="form-control text-white bg-transparent" id="floatingInput" onChange={(e) => setUsername(e.target.value)} placeholder="name@example.com" />
                             <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>User Name</label>
                         </div>
                         <div className="form-floating mt-2">
-                            <input type="email" className="form-control text-white bg-transparent text-xl" id="floatingInput" placeholder="name@example.com" />
+                            <input type="email" className="form-control text-white bg-transparent text-xl" id="floatingInput" onChange={(e) => setUserEmail(e.target.value)} placeholder="name@example.com" />
                             <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>Email address</label>
                         </div>
                         <div className="form-floating mt-2">
@@ -106,13 +112,13 @@ const SignUp = () => {
                             <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Enter  Password</label>
                         </div>
                         <div className="form-floating mt-2">
-                            <input type="password" className="form-control text-white bg-transparent text-xl" id="floatingPassword" placeholder="Password" />
+                            <input type="password" className="form-control text-white bg-transparent text-xl" id="floatingPassword" onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
                             <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Conform Password</label>
                         </div>
 
                         <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Allready have an account?  <Link className='text-white'>Sign in</Link></h6>
                         <div className='text-center mt-2'>
-                            <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }}>Sign up</button>
+                            <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleRegister}>Sign up</button>
                         </div>
                         {/* <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> */}
                     </form>
