@@ -2,17 +2,35 @@ import React, { useEffect, useRef, useState } from 'react'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import GoogleFontLoader from 'react-google-font-loader';
-import { FcGoogle } from "react-icons/fc";
-import { BsFacebook } from "react-icons/bs";
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
+import ExcelJS from "exceljs";
 // import bgimg from './images/R2/image5.png'
+export const addToExcel = (userData) => {
+    // Define headers for Excel columns
+    worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
 
+    // Add form data to Excel worksheet
+    const { userid, username, useremail, password } = userData;
+    worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
+};
 const SignUp = () => {
     const webcamRef = useRef(null);
-    const [username, setUsername] = useState('');
-    const [useremail, setUserEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [userid, setUserId] = useState()
+    const [userData, setUserData] = useState({
+        userid: Math.floor(Math.random()),
+        username: '',
+        useremail: '',
+        password: '',
+    });
+
+    const handleData = (e) => {
+        const { name, value } = e.target;
+        setUserData((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
     const [registrationComplete, setRegistrationComplete] = useState(false);
 
     useEffect(() => {
@@ -27,34 +45,41 @@ const SignUp = () => {
         loadModels();
     }, []);
 
-    const handleUsernameChange = (event) => {
-        setUsername(event.target.value);
-    };
+    const SubmitData = async (e) => {
+        e.preventDefault();
 
-    const handleRegister = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-        { console.log(username) }
-        { console.log(useremail) }
-        { console.log(password) }
-        { console.log(detections) }
-        // { console.log(image) }
+        console.log(detections);
 
         if (detections) {
             const faceDescriptor = detections.descriptor;
+            const userfaceUrl = JSON.stringify(faceDescriptor)
+            // const userfaceUrl = faceDescriptor.JSON.stringify(faceDescriptor)
 
-            // Store the username and face descriptor in localStorage or send to backend
-            localStorage.setItem('username', username);
-            localStorage.setItem('useremail', useremail);
-            localStorage.setItem('userpassword', password);
-            localStorage.setItem('faceDescriptor', JSON.stringify(faceDescriptor));
+            // console.log(userUrl);
 
+            // Create a new workbook and worksheet
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Registraton');
+
+            // // Generate Excel file and download
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'formData.xlsx';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
             setRegistrationComplete(true);
         } else {
             alert('No face detected. Please try again.');
-        }
-    };
+        };
+    }
+
     return (
         <>
             <GoogleFontLoader
@@ -85,12 +110,12 @@ const SignUp = () => {
                             audio={false}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
-                            width={500}
-                            height={500}
+                            width={400}
+                            height={400}
                             videoConstraints={{ facingMode: 'user' }}
                         />
                     </div>
-                    <form className='w-96'>
+                    <form className='w-96' onSubmit={SubmitData}>
                         <h1 className='xs:text-lg md:text-3xl xs:text-center md:text-left'>Sign Up</h1>
                         {/* <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" /> */}
                         <h1 className="xs:text-sm md:text-2xl xs:text-center md:text-left mb-3 fw-normal text-white" style={{ fontFamily: 'Josefin Sans' }}>Enter details to Create Account</h1>
@@ -100,11 +125,15 @@ const SignUp = () => {
                         </div>
                         <h5 className='text-center text-white my-2 xs:text-sm md:text-lg' style={{ fontFamily: 'Josefin Sans' }}>OR</h5> */}
                         <div className="form-floating mt-4">
-                            <input type="text" className="form-control text-white bg-transparent" id="floatingInput" onChange={(e) => setUsername(e.target.value)} placeholder="name@example.com" />
+                            <input type="hidden" name='userid' className="form-control text-white bg-transparent" id="floatingInput" onChange={handleData} />
+                            <label>user id</label>
+                        </div>
+                        <div className="form-floating mt-4">
+                            <input type="text" name='username' className="form-control text-white bg-transparent" id="floatingInput" onChange={handleData} placeholder="name@example.com" />
                             <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>User Name</label>
                         </div>
                         <div className="form-floating mt-2">
-                            <input type="email" className="form-control text-white bg-transparent text-xl" id="floatingInput" onChange={(e) => setUserEmail(e.target.value)} placeholder="name@example.com" />
+                            <input type="email" name='useremail' className="form-control text-white bg-transparent text-xl" id="floatingInput" onChange={handleData} placeholder="name@example.com" />
                             <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>Email address</label>
                         </div>
                         <div className="form-floating mt-2">
@@ -112,13 +141,13 @@ const SignUp = () => {
                             <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Enter  Password</label>
                         </div>
                         <div className="form-floating mt-2">
-                            <input type="password" className="form-control text-white bg-transparent text-xl" id="floatingPassword" onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                            <input type="password" name='password' className="form-control text-white bg-transparent text-xl" id="floatingPassword" onChange={handleData} placeholder="Password" />
                             <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Conform Password</label>
                         </div>
 
                         <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Allready have an account?  <Link className='text-white'>Sign in</Link></h6>
                         <div className='text-center mt-2'>
-                            <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleRegister}>Sign up</button>
+                            <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} >Sign up</button>
                         </div>
                         {/* <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> */}
                     </form>
