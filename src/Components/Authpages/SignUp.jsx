@@ -6,19 +6,9 @@ import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import ExcelJS from "exceljs";
 // import bgimg from './images/R2/image5.png'
-export const addToExcel = (userData) => {
-    // Define headers for Excel columns
-    worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
-
-    // Add form data to Excel worksheet
-    const { userid, username, useremail, password } = userData;
-    worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
-};
 const SignUp = () => {
     const webcamRef = useRef(null);
-    const [userid, setUserId] = useState()
     const [userData, setUserData] = useState({
-        userid: Math.floor(Math.random()),
         username: '',
         useremail: '',
         password: '',
@@ -56,15 +46,29 @@ const SignUp = () => {
         if (detections) {
             const faceDescriptor = detections.descriptor;
             const userfaceUrl = JSON.stringify(faceDescriptor)
-            // const userfaceUrl = faceDescriptor.JSON.stringify(faceDescriptor)
-
-            // console.log(userUrl);
 
             // Create a new workbook and worksheet
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('Registraton');
 
-            // // Generate Excel file and download
+            //Define headers for Excel columns
+            worksheet.addRow(['userid', 'username', 'useremail', 'password', 'userfaceUrl']);
+
+            // Add form data to Excel worksheet
+            const { username, useremail, password } = userData;
+
+
+            const generateUniqueId = () => {
+                const randomNumber = Math.random().toString(36).substr(2, 9); // Generate a random alphanumeric string
+                const timestamp = Date.now().toString(36); // Convert current timestamp to base-36 string
+                return `${randomNumber}${timestamp}`; // Combine random number and timestamp
+            };
+
+            const userid = generateUniqueId();
+
+            worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
+
+            // Generate Excel file and download
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 const url = URL.createObjectURL(blob);
@@ -125,7 +129,7 @@ const SignUp = () => {
                         </div>
                         <h5 className='text-center text-white my-2 xs:text-sm md:text-lg' style={{ fontFamily: 'Josefin Sans' }}>OR</h5> */}
                         <div className="form-floating mt-4">
-                            <input type="hidden" name='userid' className="form-control text-white bg-transparent" id="floatingInput" onChange={handleData} />
+                            <input type="hidden" className="form-control text-white bg-transparent" id="floatingInput" />
                             <label>user id</label>
                         </div>
                         <div className="form-floating mt-4">
