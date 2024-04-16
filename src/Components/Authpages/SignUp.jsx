@@ -5,10 +5,15 @@ import GoogleFontLoader from 'react-google-font-loader';
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import ExcelJS from "exceljs";
+import { v4 as uuidv4 } from 'uuid';
+import { saveAs } from 'file-saver';
+
 // import bgimg from './images/R2/image5.png'
 const SignUp = () => {
     const webcamRef = useRef(null);
-    const [userData, setUserData] = useState({
+    var userfaceUrl = ''
+    const [workbook, setWorkbook] = useState(null);
+    var [userData, setUserData] = useState({
         username: '',
         useremail: '',
         password: '',
@@ -33,6 +38,19 @@ const SignUp = () => {
         };
 
         loadModels();
+        const initializeWorkbook = async () => {
+            const wb = new ExcelJS.Workbook();
+            try {
+                await wb.xlsx.readFile('users.xlsx'); // Adjust path as needed
+            } catch (error) {
+                // Handle file not found or create new workbook
+                const ws = wb.addWorksheet('Users');
+                ws.addRow(['ID', 'Name', 'Email']); // Add header row
+            }
+            setWorkbook(wb); // Update workbook state
+        };
+
+        initializeWorkbook();
     }, []);
 
     const SubmitData = async (e) => {
@@ -41,47 +59,52 @@ const SignUp = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-        console.log(detections);
 
         if (detections) {
             const faceDescriptor = detections.descriptor;
-            const userfaceUrl = JSON.stringify(faceDescriptor)
+            userfaceUrl = JSON.stringify(faceDescriptor)
 
-            // Create a new workbook and worksheet
-            const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet('Registraton');
+            // Create a new workbook and worksheet-
+            if (!workbook) {
+                console.error('Workbook not initialized.');
+                return;
+            }
 
-            //Define headers for Excel columns
-            worksheet.addRow(['userid', 'username', 'useremail', 'password', 'userfaceUrl']);
+            try {
+                const worksheet = workbook.getWorksheet('Users');
+                const userId = uuidv4();
+                worksheet.addRow([userId, userData.username, userData.useremail, userData.password, userfaceUrl]); // Add user data
 
-            // Add form data to Excel worksheet
-            const { username, useremail, password } = userData;
+                // Save the updated workbook to 'users.xlsx'
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                saveAs(new Blob([buffer]), 'users.xlsx');
 
 
-            const generateUniqueId = () => {
-                const randomNumber = Math.random().toString(36).substr(2, 9); // Generate a random alphanumeric string
-                const timestamp = Date.now().toString(36); // Convert current timestamp to base-36 string
-                return `${randomNumber}${timestamp}`; // Combine random number and timestamp
-            };
+                alert('User registered successfully!');
+            } catch (error) {
+                console.error('Error registering user:', error);
+                alert('Failed to register user.');
+            }
 
-            const userid = generateUniqueId();
-
-            worksheet.addRow([userid, username, useremail, password, userfaceUrl]);
-
-            // Generate Excel file and download
-            workbook.xlsx.writeBuffer().then((buffer) => {
-                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'formData.xlsx';
-                a.click();
-                URL.revokeObjectURL(url);
-            });
             setRegistrationComplete(true);
         } else {
             alert('No face detected. Please try again.');
         };
+    }
+    const exportToexcel = async (userData) => {
+
+
+        // Generate Excel file and download
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Register.xlsx';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
     }
 
     return (
@@ -129,10 +152,6 @@ const SignUp = () => {
                         </div>
                         <h5 className='text-center text-white my-2 xs:text-sm md:text-lg' style={{ fontFamily: 'Josefin Sans' }}>OR</h5> */}
                         <div className="form-floating mt-4">
-                            <input type="hidden" className="form-control text-white bg-transparent" id="floatingInput" />
-                            <label>user id</label>
-                        </div>
-                        <div className="form-floating mt-4">
                             <input type="text" name='username' className="form-control text-white bg-transparent" id="floatingInput" onChange={handleData} placeholder="name@example.com" />
                             <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>User Name</label>
                         </div>
@@ -156,6 +175,7 @@ const SignUp = () => {
                         {/* <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> */}
                     </form>
                 </div>
+                <button onClick={exportToexcel}>export</button>
             </div>
         </>
     )
