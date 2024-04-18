@@ -7,15 +7,16 @@ import Webcam from 'react-webcam';
 import ExcelJS from "exceljs";
 import { v4 as uuidv4 } from 'uuid';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 
 // import bgimg from './images/R2/image5.png'
 const SignUp = () => {
     const webcamRef = useRef(null);
-    var userfaceUrl = ''
     var [userData, setUserData] = useState({
         username: '',
         useremail: '',
         password: '',
+        userfaceUrl: ''
     });
 
     const handleData = (e) => {
@@ -47,6 +48,8 @@ const SignUp = () => {
         if (detections) {
             const faceDescriptor = detections.descriptor;
             userfaceUrl = JSON.stringify(faceDescriptor)
+
+            await axios.post('/sign-up', { userData: userData })
 
             // Create a new workbook and worksheet-
         } else {
