@@ -1,7 +1,7 @@
 {
   "name": "attendance-system",
-  "homepage": "https://github.com/dalwadi1/Attendance-system/",
-  "private": false,
+  "homepage": "https://dalwadi1.github.io/Attendance-system/",
+  "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
