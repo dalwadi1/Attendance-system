@@ -12,11 +12,12 @@ import axios from 'axios';
 // import bgimg from './images/R2/image5.png'
 const SignUp = () => {
     const webcamRef = useRef(null);
+    var userfaceUrl
     var [userData, setUserData] = useState({
         username: '',
         useremail: '',
         password: '',
-        userfaceUrl: ''
+
     });
 
     const handleData = (e) => {
@@ -31,11 +32,12 @@ const SignUp = () => {
     useEffect(() => {
         const loadModels = async () => {
             await Promise.all([
-                faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+                await faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
             ]);
         };
+        loadModels()
     }, []);
 
     const SubmitData = async (e) => {
@@ -49,7 +51,12 @@ const SignUp = () => {
             const faceDescriptor = detections.descriptor;
             userfaceUrl = JSON.stringify(faceDescriptor)
 
-            await axios.post('/sign-up', { userData: userData })
+            const sendData = {
+                userData: userData,
+                userfaceUrl: userfaceUrl
+            }
+            await axios.post('http://localhost:5000/sign-up', sendData)
+            alert('done');
 
             // Create a new workbook and worksheet-
         } else {

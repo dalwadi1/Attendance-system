@@ -8,11 +8,11 @@ router.get('/', (req, res) => {
 
 router.post('/sign-up', (req, res) => {
 
-    const { userName, email, password, image } = req.body;
-
+    const { username, useremail, password } = req.body.userData;
+    const image = req.body.userfaceUrl
     const adduser = registeredUser({
-        userName: userName,
-        email: email,
+        userName: username,
+        email: useremail,
         password: password,
         image: image
     })
