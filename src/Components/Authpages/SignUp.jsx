@@ -12,7 +12,6 @@ import { saveAs } from 'file-saver';
 const SignUp = () => {
     const webcamRef = useRef(null);
     var userfaceUrl = ''
-    const [workbook, setWorkbook] = useState(null);
     var [userData, setUserData] = useState({
         username: '',
         useremail: '',
@@ -36,21 +35,6 @@ const SignUp = () => {
                 faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
             ]);
         };
-
-        loadModels();
-        const initializeWorkbook = async () => {
-            const wb = new ExcelJS.Workbook();
-            try {
-                await wb.xlsx.readFile('users.xlsx'); // Adjust path as needed
-            } catch (error) {
-                // Handle file not found or create new workbook
-                const ws = wb.addWorksheet('Users');
-                ws.addRow(['ID', 'Name', 'Email']); // Add header row
-            }
-            setWorkbook(wb); // Update workbook state
-        };
-
-        initializeWorkbook();
     }, []);
 
     const SubmitData = async (e) => {
@@ -65,48 +49,10 @@ const SignUp = () => {
             userfaceUrl = JSON.stringify(faceDescriptor)
 
             // Create a new workbook and worksheet-
-            if (!workbook) {
-                console.error('Workbook not initialized.');
-                return;
-            }
-
-            try {
-                const worksheet = workbook.getWorksheet('Users');
-                const userId = uuidv4();
-                worksheet.addRow([userId, userData.username, userData.useremail, userData.password, userfaceUrl]); // Add user data
-
-                // Save the updated workbook to 'users.xlsx'
-
-                const buffer = await workbook.xlsx.writeBuffer();
-                saveAs(new Blob([buffer]), 'users.xlsx');
-
-
-                alert('User registered successfully!');
-            } catch (error) {
-                console.error('Error registering user:', error);
-                alert('Failed to register user.');
-            }
-
-            setRegistrationComplete(true);
         } else {
             alert('No face detected. Please try again.');
         };
     }
-    const exportToexcel = async (userData) => {
-
-
-        // Generate Excel file and download
-        workbook.xlsx.writeBuffer().then((buffer) => {
-            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Register.xlsx';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-    }
-
     return (
         <>
             <GoogleFontLoader
@@ -175,7 +121,6 @@ const SignUp = () => {
                         {/* <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> */}
                     </form>
                 </div>
-                <button onClick={exportToexcel}>export</button>
             </div>
         </>
     )
