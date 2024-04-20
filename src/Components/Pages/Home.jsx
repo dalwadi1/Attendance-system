@@ -1,14 +1,13 @@
 import React from 'react'
 import { MdOutlineManageAccounts } from "react-icons/md";
 import GoogleFontLoader from 'react-google-font-loader';
-import { TbArrowBigRightLinesFilled } from "react-icons/tb";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { TiArrowForward } from "react-icons/ti";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Navigation } from 'swiper/modules';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
@@ -32,7 +31,7 @@ const Home = () => {
                         <h1 className='lg:text-sm md:text-sm text-white xs:text-xs mt-4' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
                     <button>
-                        <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
+                        <Link to='/Sign-up'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
                     </button>
 
                 </div>

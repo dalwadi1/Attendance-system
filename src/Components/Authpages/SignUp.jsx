@@ -4,12 +4,8 @@ import { Link } from 'react-router-dom'
 import GoogleFontLoader from 'react-google-font-loader';
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
-import ExcelJS from "exceljs";
-import { v4 as uuidv4 } from 'uuid';
-import { saveAs } from 'file-saver';
 import axios from 'axios';
 
-// import bgimg from './images/R2/image5.png'
 const SignUp = () => {
     const webcamRef = useRef(null);
     var userfaceUrl
@@ -26,9 +22,7 @@ const SignUp = () => {
             ...prevData,
             [name]: value
         }));
-    };
-    const [registrationComplete, setRegistrationComplete] = useState(false);
-
+    }
     useEffect(() => {
         const loadModels = async () => {
             await Promise.all([
@@ -56,9 +50,6 @@ const SignUp = () => {
                 userfaceUrl: userfaceUrl
             }
             await axios.post('http://localhost:5000/sign-up', sendData)
-            alert('done');
-
-            // Create a new workbook and worksheet-
         } else {
             alert('No face detected. Please try again.');
         };
@@ -82,7 +73,7 @@ const SignUp = () => {
                         <h1 className='lg:text-sm md:text-sm text-white xs:text-xs mt-4' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
                     <button>
-                        <Link to='/SignUp'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
+                        <Link to='/Sign-up'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
                     </button>
 
                 </div>
@@ -100,7 +91,6 @@ const SignUp = () => {
                     </div>
                     <form className='w-96' onSubmit={SubmitData}>
                         <h1 className='xs:text-lg md:text-3xl xs:text-center md:text-left'>Sign Up</h1>
-                        {/* <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" /> */}
                         <h1 className="xs:text-sm md:text-2xl xs:text-center md:text-left mb-3 fw-normal text-white" style={{ fontFamily: 'Josefin Sans' }}>Enter details to Create Account</h1>
                         {/* <div className='container flex'>
                             <button className='bg-slate-600 xs:text-sm md:text-lg w-48 rounded-full p-1 mx-3 text-right space-x-10 text-white flex items-center hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}><FcGoogle fontSize={25} /> google</button>
@@ -124,7 +114,7 @@ const SignUp = () => {
                             <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Conform Password</label>
                         </div>
 
-                        <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Allready have an account?  <Link className='text-white'>Sign in</Link></h6>
+                        <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Allready have an account?  <Link className='text-white' to='/sign-in'>Sign in</Link></h6>
                         <div className='text-center mt-2'>
                             <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} >Sign up</button>
                         </div>
