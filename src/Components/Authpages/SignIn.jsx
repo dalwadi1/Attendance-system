@@ -4,18 +4,17 @@ import * as faceapi from 'face-api.js';
 import axios from 'axios';
 import GoogleFontLoader from 'react-google-font-loader';
 import { MdOutlineManageAccounts } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Bounce, toast } from 'react-toastify';
 
 const SignIn = () => {
+    var navigate = useNavigate()
     const webcamRef = useRef(null);
-    var img_desp
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     useEffect(() => {
-        // Load face detection models before performing face detection
         const loadModels = async () => {
             await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
             await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+            await faceapi.nets.faceExpressionNet.loadFromUri('/models');
             await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
         };
 
@@ -25,23 +24,50 @@ const SignIn = () => {
     const handleLogin = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-        // console.log(detections.descriptor);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
         if (detections) {
-            const sendData = {
-                userData: detections,
-            }
-            const response = await axios.post('http://localhost:5000/sign-in', sendData);
-            if (response.data.success) {
-                setIsAuthenticated(true);
-                console.log('sign in done');
-                // Handle successful login (e.g., redirect to dashboard)    
+            const res = await axios.post('http://localhost:5000/sign-in', detections);
+            if (res.data.success === true) {
+                toast.success(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                console.log(res.data.data);
+                navigate("/user-desh");
+
             } else {
-                // Handle unsuccessful login (e.g., display error message)
-                console.log('Face not recognized');
+                toast.error(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                navigate("/sign-up");
             }
         } else {
-            console.log('error to detaction');
+            toast.error('error to detaction', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     };
 
@@ -79,26 +105,9 @@ const SignIn = () => {
                             height={400}
                             videoConstraints={{ facingMode: 'user' }}
                         />
+                        <button className="mt-5 text-center bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleLogin}>Sign in</button>
                     </div>
-                    {/* <form className='w-96' >
-                        <h1 className='xs:text-lg md:text-3xl xs:text-center md:text-left'>Sign in</h1>
-                        <h1 className="xs:text-sm md:text-2xl xs:text-center md:text-left mb-3 fw-normal text-white" style={{ fontFamily: 'Josefin Sans' }}>Enter details to Create Account</h1>
-                       <div className="form-floating mt-2">
-                            <input type="email" name='useremail' className="form-control text-white bg-transparent text-xl" id="floatingInput" placeholder="name@example.com" />
-                            <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>Email address</label>
-                        </div>
-                        <div className="form-floating mt-2">
-                            <input type="password" className="form-control text-white bg-transparent text-xl" id="floatingPassword" placeholder="Password" />
-                            <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Enter  Password</label>
-                        </div>
 
-                        <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Dont't have an account?  <Link className='text-white' to='/sign-up'>Sign up</Link></h6>
-                        <div className='text-center mt-2'>
-                            <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }}  >Sign in</button>
-                        </div>
-
-                    </form> */}
-                    <button onClick={handleLogin}>capture</button>
                 </div>
             </div>
         </>

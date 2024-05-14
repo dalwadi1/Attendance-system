@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 
 const app = express();
-import Routes from './Routes/web.js';
+import Routes from './Routes/AuthRoutes.js';
 import mongoose from 'mongoose';
 
 app.use(bodyParser.json());

@@ -11,13 +11,11 @@ const register = new mongoose.Schema({
         type: String,
 
     },
-    password: {
-        type: String,
-
+    token: {
+        type: 'String'
     },
-    image: {
-        type: String,
-
+    faceDescriptor: {
+        type: Array, required: true
     },
 })
 

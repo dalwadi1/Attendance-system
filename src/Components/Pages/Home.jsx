@@ -23,7 +23,7 @@ const Home = () => {
             />
             <div className='h-screen bg-slate-500'>
                 {/* navbar */}
-                <div className='container flex justify-between sticky top-3 px-20 mx-auto lg:w-11/12'>
+                <div className='container flex justify-between sticky top-0 px-20 mx-auto lg:w-11/12'>
                     <div className='flex items-center'>
                         <div className='md:w-11 w-6 rounded-full cursor-pointer flex'>
                             <Link to='/'><img src="./images/R3/logo1.png" alt="" /></Link>

@@ -5,10 +5,10 @@ import GoogleFontLoader from 'react-google-font-loader';
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import axios from 'axios';
+import { Bounce, toast } from 'react-toastify';
 
 const SignUp = () => {
     const webcamRef = useRef(null);
-    var userfaceUrl
     var [userData, setUserData] = useState({
         username: '',
         useremail: '',
@@ -28,6 +28,7 @@ const SignUp = () => {
             await Promise.all([
                 await faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
                 await faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                await faceapi.nets.faceExpressionNet.loadFromUri('/models'),
                 await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
             ]);
         };
@@ -39,19 +40,53 @@ const SignUp = () => {
 
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
 
         if (detections) {
-            const faceDescriptor = detections.descriptor;
-            userfaceUrl = JSON.stringify(faceDescriptor)
-
             const sendData = {
                 userData: userData,
-                userfaceUrl: userfaceUrl
+                userfaceUrl: detections
             }
-            await axios.post('http://localhost:5000/sign-up', sendData)
+            // console.log(faceDescriptor);
+            const res = await axios.post('http://localhost:5000/sign-up', sendData)
+
+            if (res.data.success === true) {
+                toast.success(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            } else {
+                toast.error(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
         } else {
-            alert('No face detected. Please try again.');
+            toast.error('No face detected. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         };
     }
     return (
@@ -92,33 +127,19 @@ const SignUp = () => {
                     <form className='w-96' onSubmit={SubmitData}>
                         <h1 className='xs:text-lg md:text-3xl xs:text-center md:text-left'>Sign Up</h1>
                         <h1 className="xs:text-sm md:text-2xl xs:text-center md:text-left mb-3 fw-normal text-white" style={{ fontFamily: 'Josefin Sans' }}>Enter details to Create Account</h1>
-                        {/* <div className='container flex'>
-                            <button className='bg-slate-600 xs:text-sm md:text-lg w-48 rounded-full p-1 mx-3 text-right space-x-10 text-white flex items-center hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}><FcGoogle fontSize={25} /> google</button>
-                            <button className='bg-slate-600 xs:text-sm md:text-lg w-48 rounded-full p-1 mx-3 text-right space-x-10 text-white flex items-center hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}><BsFacebook fontSize={25} color='blue' /> facebook</button>
-                        </div>
-                        <h5 className='text-center text-white my-2 xs:text-sm md:text-lg' style={{ fontFamily: 'Josefin Sans' }}>OR</h5> */}
                         <div className="form-floating mt-4">
                             <input type="text" name='username' className="form-control text-white bg-transparent" id="floatingInput" onChange={handleData} placeholder="name@example.com" />
-                            <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>User Name</label>
+                            <label style={{ fontFamily: 'Josefin Sans' }}>User Name</label>
                         </div>
                         <div className="form-floating mt-2">
-                            <input type="email" name='useremail' className="form-control text-white bg-transparent text-xl" id="floatingInput" onChange={handleData} placeholder="name@example.com" />
-                            <label for="floatingInput" style={{ fontFamily: 'Josefin Sans' }}>Email address</label>
-                        </div>
-                        <div className="form-floating mt-2">
-                            <input type="password" className="form-control text-white bg-transparent text-xl" id="floatingPassword" placeholder="Password" />
-                            <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Enter  Password</label>
-                        </div>
-                        <div className="form-floating mt-2">
-                            <input type="password" name='password' className="form-control text-white bg-transparent text-xl" id="floatingPassword" onChange={handleData} placeholder="Password" />
-                            <label for="floatingPassword" style={{ fontFamily: 'Josefin Sans' }}>Conform Password</label>
+                            <input type="email" name='useremail' className="form-control text-white bg-transparent text-xl" onChange={handleData} placeholder="name@example.com" />
+                            <label style={{ fontFamily: 'Josefin Sans' }}>Email address</label>
                         </div>
 
                         <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-lg'>Allready have an account?  <Link className='text-white' to='/sign-in'>Sign in</Link></h6>
                         <div className='text-center mt-2'>
                             <button className="bg-slate-700 md:text-lg md:w-96 rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} >Sign up</button>
                         </div>
-                        {/* <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> */}
                     </form>
                 </div>
             </div>
