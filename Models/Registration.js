@@ -1,5 +1,4 @@
-import express from 'express'
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 
 const register = new mongoose.Schema({
 
@@ -15,7 +14,8 @@ const register = new mongoose.Schema({
         type: 'String'
     },
     faceDescriptor: {
-        type: Array, required: true
+        type: Array,
+        required: true
     },
 })
 

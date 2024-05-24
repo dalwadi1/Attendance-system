@@ -13,6 +13,6 @@ console.log("done");
 
 mongoose.connect('mongodb://localhost:27017/attendance_system')
 app.use(Routes)
-app.listen(5000, () => {
+app.listen(8000, () => {
     console.log('server start')
 })

@@ -1,16 +1,122 @@
-import React from 'react'
-import { MdOutlineManageAccounts } from "react-icons/md";
+import React, { useEffect, useRef, useState } from 'react'
 import GoogleFontLoader from 'react-google-font-loader';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { TiArrowForward } from "react-icons/ti";
 import 'swiper/css';
 import 'swiper/css/pagination';
+import * as faceapi from 'face-api.js';
 import 'swiper/css/navigation';
-
 import { Autoplay, Navigation } from 'swiper/modules';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Modal from 'react-bootstrap/Modal';
+import Webcam from 'react-webcam';
+import { Bounce, toast } from 'react-toastify';
+import axios from 'axios';
 
+function Signin(props) {
+    const navigate = useNavigate()
+    const webcamRef = useRef(null);
+    var [userData, setUserData] = useState({
+        username: '',
+        useremail: '',
+        password: '',
+
+    });
+    useEffect(() => {
+        const loadModels = async () => {
+            await Promise.all([
+                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+                await faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                await faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+                await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+            ]);
+        };
+        loadModels()
+    }, []);
+
+    const handleLogin = async () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        const image = await faceapi.fetchImage(imageSrc);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
+        if (detections) {
+            const res = await axios.post('http://localhost:8000/sign-in', detections);
+            if (res.data.success === true) {
+                toast.success(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                console.log(res.data.data);
+                navigate("/user-desh");
+
+            } else {
+                toast.error(res.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                navigate("/sign-up");
+            }
+        } else {
+            toast.error('error to detaction', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    };
+    return (
+        <>
+            <Modal
+                {...props}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className='text-center'>
+
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='md:mx-auto text-center'>
+                    <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        width={400}
+                        height={400}
+                        videoConstraints={{ facingMode: 'user' }}
+                    />
+                    <button className="mt-5 items-center bg-slate-700 md:text-lg rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleLogin}>Sign in</button>
+
+                </Modal.Body>
+                <Modal.Footer>
+
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+}
 const Home = () => {
+    const [signin, setSignin] = useState(false);
     return (
         <>
             <GoogleFontLoader
@@ -21,6 +127,11 @@ const Home = () => {
                     },
                 ]}
             />
+            <Signin
+                show={signin}
+                onHide={() => setSignin(false)}
+            />
+
             <div className='h-screen bg-slate-500'>
                 {/* navbar */}
                 <div className='container flex justify-between sticky top-0 px-20 mx-auto lg:w-11/12'>
@@ -30,12 +141,11 @@ const Home = () => {
                         </div>
                         <h1 className='lg:text-sm md:text-sm text-white xs:text-xs mt-4' style={{ fontFamily: 'Josefin Sans' }}>Dalwadi</h1>
                     </div>
-                    <button>
-                        <Link to='/Sign-up'><MdOutlineManageAccounts className='md:text-4xl xs:text-2xl' color='blue' /></Link>
+                    <button className='bg-slate-700 rounded p-2 m-2 text-white' onClick={() => setSignin(true)}>
+                        Signin
                     </button>
-
                 </div>
-                <div className='px-6 mx-auto md:flex items-center -m-12 h-screen md:w-fit'>
+                <div className='px-6 mx-auto md:flex items-center md:-m-12 h-full md:w-fit'>
                     <div className='h-auto md:block sm:max-w-96 md:max-w-96 xs:hidden'>
                         <Swiper
                             spaceBetween={30}
@@ -44,9 +154,6 @@ const Home = () => {
                                 delay: 2500,
                                 disableOnInteraction: false,
                             }}
-                            // pagination={{
-                            //     clickable: true,
-                            // }}
                             navigation={false}
                             modules={[Autoplay, Navigation]}
                             className="mySwiper"
@@ -89,8 +196,8 @@ const Home = () => {
                             <h6 className='flex text-sm'><TiArrowForward fontSize={23} />Implements multi-factor authentication to enhance security and prevent unauthorized access.</h6>
                         </div>
                         <div className='md:mt-9 xs:mt-7 flex lg:justify-self-center xs:justify-center'>
-                            <button className='xs:bg-gray-700 md:bg-slate-700 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
-                            <button className='xs:bg-gray-700 md:bg-slate-700 ml-4 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
+                            <button className='xs:bg-gray-700 md:bg-slate-700 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' onClick={() => setSignin(true)} style={{ fontFamily: 'Josefin Sans' }}>Get's start</button>
+                            <button className='xs:bg-gray-700 md:bg-slate-700 ml-4 rounded-full shadow-2xl md:p-4 sx:p-2 p-2 xs:text-sm text-white hover:bg-black' onClick={() => setSignin(true)} style={{ fontFamily: 'Josefin Sans' }}>Take Attendance</button>
                         </div>
                     </div>
 
