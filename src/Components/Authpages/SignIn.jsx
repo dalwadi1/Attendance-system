@@ -20,9 +20,6 @@ const SignIn = () => {
 
         loadModels();
     }, []);
-
-    
-
     return (
         <>
             <GoogleFontLoader

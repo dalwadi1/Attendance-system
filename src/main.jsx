@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'react-toastify/dist/ReactToastify.css';
 import "/public/css/style.css";
+
 // import "/public/js/main.jsx";
 import { Bounce, ToastContainer } from 'react-toastify'
 
