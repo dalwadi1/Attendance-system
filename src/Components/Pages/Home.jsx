@@ -12,8 +12,10 @@ import Modal from 'react-bootstrap/Modal';
 import Webcam from 'react-webcam';
 import { Bounce, toast } from 'react-toastify';
 import axios from 'axios';
+import { RotatingLines } from 'react-loader-spinner';
 
 function Signin(props) {
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
     const webcamRef = useRef(null);
     var [userData, setUserData] = useState({
@@ -39,38 +41,48 @@ function Signin(props) {
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
         if (detections) {
-            const res = await axios.post('http://localhost:8000/sign-in', detections);
-            if (res.data.success === true) {
-                toast.success(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                console.log(res.data.data);
-                navigate("/user-desh");
+            setLoading(true);
+            try {
+                const res = await axios.post('http://localhost:8000/sign-in', detections);
 
-            } else {
-                toast.error(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                navigate("/sign-up");
+                if (res.data.success === true) {
+                    toast.success(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    console.log(res.data.data);
+                    navigate("/user-desh");
+
+                } else {
+                    toast.error(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    navigate("/sign-up");
+                }
+
+            }
+            catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
             }
         } else {
-            toast.error('error to detaction', {
+            toast.error("error to detect", {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -81,6 +93,7 @@ function Signin(props) {
                 theme: "light",
                 transition: Bounce,
             });
+
         }
     };
     return (
@@ -97,16 +110,31 @@ function Signin(props) {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='md:mx-auto text-center'>
-                    <Webcam
-                        audio={false}
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        width={400}
-                        height={400}
-                        videoConstraints={{ facingMode: 'user' }}
-                    />
-                    <button className="mt-5 items-center bg-slate-700 md:text-lg rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleLogin}>Sign in</button>
 
+                    {loading ? (
+                        <RotatingLines
+                            visible={true}
+                            height="96"
+                            width="96"
+                            color="grey"
+                            strokeWidth="5"
+                            animationDuration="0.75"
+                            ariaLabel="rotating-lines-loading"
+                        />
+                    ) : (
+                        <>
+                            <Webcam
+                                audio={false}
+                                ref={webcamRef}
+                                screenshotFormat="image/jpeg"
+                                width={400}
+                                height={400}
+                                videoConstraints={{ facingMode: 'user' }}
+                            />
+                            <button className="mt-5 items-center bg-slate-700 md:text-lg rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleLogin}>Sign in</button>
+
+                        </>
+                    )}
                 </Modal.Body>
                 <Modal.Footer>
 
