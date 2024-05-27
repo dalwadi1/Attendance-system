@@ -6,6 +6,10 @@ const register = new mongoose.Schema({
         type: String,
 
     },
+    type: {
+        type: String,
+        default: 'user'
+    },
     email: {
         type: String,
 

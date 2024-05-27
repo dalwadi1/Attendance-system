@@ -4,9 +4,12 @@ import { FaHashtag, FaTachometerAlt } from 'react-icons/fa'
 import { RiFileEditFill } from 'react-icons/ri'
 import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 const Sidebar = () => {
+    const userId = useSelector((state) => state.user.user.data._id);
+    const userName = useSelector((state) => state.user.user.data.userName);
     return (
         <>
             <div className="sidebar pe-4 pb-3">
@@ -20,7 +23,7 @@ const Sidebar = () => {
                             <div className="bg-success rounded-circle border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                         </div>
                         <div className="ms-3">
-                            <h6 className="mb-0">Jhon Doe</h6>
+                            <h6 className="mb-0">{userName}</h6>
                             <span>Admin</span>
                         </div>
                     </div>

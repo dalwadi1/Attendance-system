@@ -5,14 +5,18 @@ import { GiHamburgerMenu } from 'react-icons/gi'
 import { RiFileEditFill } from 'react-icons/ri'
 import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
 import { useDispatch, useSelector } from 'react-redux'
+import { Bounce, toast } from 'react-toastify'
+import axios from 'axios'
 
 function Attendance(props) {
+
+    const navigate = useNavigate()
 
     const webcamRef = useRef(null);
 
@@ -33,7 +37,6 @@ function Attendance(props) {
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
         if (detections) {
-            setLoading(true);
             try {
                 const res = await axios.post('http://localhost:8000/punchin', detections);
 
@@ -50,7 +53,7 @@ function Attendance(props) {
                         transition: Bounce,
                     });
                     console.log(res.data.data);
-                    navigate("/user-desh");
+                    navigate("/attendance");
 
                 } else {
                     toast.error(res.data.message, {
@@ -70,8 +73,6 @@ function Attendance(props) {
             }
             catch (error) {
                 console.log(error);
-            } finally {
-                setLoading(false);
             }
         } else {
             toast.error("error to detect", {
@@ -149,14 +150,9 @@ function Attendance(props) {
 // }
 
 const Content = () => {
-    const dispatch = useDispatch();
     const userId = useSelector((state) => state.user.user.data._id);
     const userName = useSelector((state) => state.user.user.data.userName);
-
-    console.log(userId);
-    console.log(userName);
-    // const error = useSelector((state) => state.user.error);
-
+    const userFace = useSelector((state) => state.user.user.data.faceDescriptor);
     const [AttendanceIn, setAttendanceIn] = useState(false);
     return (
         <>
