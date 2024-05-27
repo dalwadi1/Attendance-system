@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
 })
 
 router.post('/sign-up', async (req, res) => {
-
     const { username, useremail } = req.body.userData;
     const image = req.body.userfaceUrl
     const userimg = image.descriptor

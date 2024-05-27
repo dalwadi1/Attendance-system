@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MdOutlineManageAccounts } from 'react-icons/md'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import GoogleFontLoader from 'react-google-font-loader';
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import axios from 'axios';
 import { Bounce, toast } from 'react-toastify';
-function Signin(props) {
 
-    const [signup, setSignup] = useState(false);
 
+const SignUp = () => {
     const navigate = useNavigate()
     const webcamRef = useRef(null);
     var [userData, setUserData] = useState({
@@ -18,171 +17,6 @@ function Signin(props) {
         password: '',
 
     });
-    const handleLogin = async () => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        const image = await faceapi.fetchImage(imageSrc);
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
-        if (detections) {
-            const res = await axios.post('http://localhost:8000/sign-in', detections);
-            if (res.data.success === true) {
-                toast.success(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                console.log(res.data.data);
-                navigate("/user-desh");
-
-            } else {
-                toast.error(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                navigate("/sign-up");
-            }
-        } else {
-            toast.error('error to detaction', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-        }
-    };
-    const handleData = (e) => {
-        const { name, value } = e.target;
-        setUserData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
-    }
-    useEffect(() => {
-        const loadModels = async () => {
-            await Promise.all([
-                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-                await faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-                await faceapi.nets.faceExpressionNet.loadFromUri('/models'),
-                await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-            ]);
-        };
-        loadModels()
-    }, []);
-
-    const SubmitData = async (e) => {
-        e.preventDefault();
-
-        const imageSrc = webcamRef.current.getScreenshot();
-        const image = await faceapi.fetchImage(imageSrc);
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
-
-        if (detections) {
-            const sendData = {
-                userData: userData,
-                userfaceUrl: detections
-            }
-            // console.log(faceDescriptor);
-            const res = await axios.post('http://localhost:5000/sign-up', sendData)
-
-            if (res.data.success === true) {
-                toast.success(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-            } else {
-                toast.error(res.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-            }
-        } else {
-            toast.error('No face detected. Please try again.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-        };
-    }
-    return (
-        <>
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter" className='text-center'>
-
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='md:mx-auto'>
-                    <Webcam
-                        audio={false}
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        width={400}
-                        height={400}
-                        videoConstraints={{ facingMode: 'user' }}
-                    />
-                    <div className='flex items-center justify-between'>
-                        <button className="mt-5 items-center bg-slate-700 md:text-lg rounded-full text-white xs:w-32 text-sm py-2 hover:bg-black" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={handleLogin}>Sign in</button>
-                        <h6 className='mt-5 xs:text-center xs:text-sm md:text-left md:text-sm'>Dont't have an account? <Link to="/sign-up">Sign up</Link></h6>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
-}
-
-const SignUp = () => {
-    const webcamRef = useRef(null);
-    var [userData, setUserData] = useState({
-        username: '',
-        useremail: '',
-        password: '',
-
-    });
 
     const handleData = (e) => {
         const { name, value } = e.target;
@@ -216,7 +50,7 @@ const SignUp = () => {
                 userfaceUrl: detections
             }
             // console.log(faceDescriptor);
-            const res = await axios.post('http://localhost:5000/sign-up', sendData)
+            const res = await axios.post('http://localhost:8000/sign-up', sendData)
 
             if (res.data.success === true) {
                 toast.success(res.data.message, {
@@ -230,6 +64,8 @@ const SignUp = () => {
                     theme: "light",
                     transition: Bounce,
                 });
+
+                navigate("/")
             } else {
                 toast.error(res.data.message, {
                     position: "top-right",
