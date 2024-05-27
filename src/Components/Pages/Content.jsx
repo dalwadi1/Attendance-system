@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CiSettings } from 'react-icons/ci'
 import { FaTachometerAlt } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
@@ -6,8 +6,158 @@ import { RiFileEditFill } from 'react-icons/ri'
 import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
 import { Link } from 'react-router-dom'
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Webcam from 'react-webcam';
+import * as faceapi from 'face-api.js';
+import { useDispatch, useSelector } from 'react-redux'
+
+function Attendance(props) {
+
+    const webcamRef = useRef(null);
+
+    useEffect(() => {
+        const loadModels = async () => {
+            await Promise.all([
+                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+                await faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                await faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+                await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+            ]);
+        };
+        loadModels()
+    }, []);
+
+    const punchin = async () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        const image = await faceapi.fetchImage(imageSrc);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
+        if (detections) {
+            setLoading(true);
+            try {
+                const res = await axios.post('http://localhost:8000/punchin', detections);
+
+                if (res.data.success === true) {
+                    toast.success(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    console.log(res.data.data);
+                    navigate("/user-desh");
+
+                } else {
+                    toast.error(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    navigate("/sign-up");
+                }
+
+            }
+            catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            toast.error("error to detect", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+
+        }
+    };
+    const punchOut = () => {
+
+    }
+    return (
+        <Modal
+            {...props}
+            size="sm"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Body className='md:mx-auto text-center'>
+                <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    width={400}
+                    height={400}
+                    videoConstraints={{ facingMode: 'user' }}
+                />
+                <button className="mt-5 items-center btn btn-outline-success md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch in</button>
+                <button className="mt-5 items-center btn btn-outline-danger ml-2 md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch Out</button>
+
+            </Modal.Body>
+        </Modal>
+    );
+}
+// function PunchOut(props) {
+
+//     const webcamRef = useRef(null);
+
+//     const punchOut = () => {
+
+//     }
+//     return (
+//         <Modal
+//             {...props}
+//             size="sm"
+//             aria-labelledby="contained-modal-title-vcenter"
+//             centered
+//         >
+//             <Modal.Header closeButton>
+//                 <Modal.Title id="contained-modal-title-vcenter">
+//                     Modal heading
+//                 </Modal.Title>
+//             </Modal.Header>
+//             <Modal.Body className='md:mx-auto text-center'>
+//                 <Webcam
+//                     audio={false}
+//                     ref={webcamRef}
+//                     screenshotFormat="image/jpeg"
+//                     width={400}
+//                     height={400}
+//                     videoConstraints={{ facingMode: 'user' }}
+//                 />
+
+//             </Modal.Body>
+//         </Modal>
+//     );
+// }
 
 const Content = () => {
+    const dispatch = useDispatch();
+    const userId = useSelector((state) => state.user.user.data._id);
+    const userName = useSelector((state) => state.user.user.data.userName);
+
+    console.log(userId);
+    console.log(userName);
+    // const error = useSelector((state) => state.user.error);
+
+    const [AttendanceIn, setAttendanceIn] = useState(false);
     return (
         <>
             <div className="content">
@@ -27,7 +177,7 @@ const Content = () => {
                                         <div className="bg-success rounded-circle border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                                     </div>
                                     <div className="ms-3">
-                                        <h6 className="mb-0">Jhon Doe</h6>
+                                        <h6 className="mb-0 text-black">{userName}</h6>
                                         <span>Admin</span>
                                     </div>
                                 </div>
@@ -43,14 +193,22 @@ const Content = () => {
                         </div>
                     </div>
 
-                    <button className='btn btn-outline-success btn-sm m-1'>Punch in</button>
-                    <button className='btn btn-outline-danger btn-sm m-1'>Punch out</button>
+                    <button className='btn btn-outline-success btn-sm m-1' onClick={() => setAttendanceIn(true)}>Take Attendance</button>
+                    <Attendance
+                        show={AttendanceIn}
+                        onHide={() => setAttendanceIn(false)}
+                    />
+                    {/* <button className='btn btn-outline-danger btn-sm m-1' onClick={() => setAttendanceOut(true)}>Punch out</button>
+                    <PunchOut
+                        show={AttendanceOut}
+                        onHide={() => setAttendanceOut(false)}
+                    /> */}
 
                     <div className="navbar-nav align-items-center ms-auto ">
                         <div className="nav-item dropdown ">
                             <a href="#" className="nav-link dropdown-toggle items-center" data-bs-toggle="dropdown" style={{ "display": "flex" }}>
                                 <img className="rounded-circle me-lg-2" src="img/user.jpg" alt="" style={{ "width": "40px", "height": "40px" }} />
-                                <span className="d-none d-lg-inline-flex">John Doe</span>
+                                <span className="d-none d-lg-inline-flex">{userName}</span>
                             </a>
                             <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                                 <a href="#" className="dropdown-item">My Profile</a>

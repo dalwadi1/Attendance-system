@@ -1,11 +1,4 @@
 import React from 'react'
-import { CiSettings } from 'react-icons/ci'
-import { FaHashtag, FaLaptop, FaTachometerAlt } from 'react-icons/fa'
-import { GiHamburgerMenu } from 'react-icons/gi'
-import { RiFileEditFill } from 'react-icons/ri'
-import { SiGoogleforms } from 'react-icons/si'
-import { SlCalender } from 'react-icons/sl'
-import { Link } from 'react-router-dom'
 import Sidebar from "../Pages/Sidebar";
 import Content from "../Pages/Content";
 

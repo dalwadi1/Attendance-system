@@ -13,8 +13,12 @@ import Webcam from 'react-webcam';
 import { Bounce, toast } from 'react-toastify';
 import axios from 'axios';
 import { RotatingLines } from 'react-loader-spinner';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../Slice/userSlice.js';
+
 
 function Signin(props) {
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
     const webcamRef = useRef(null);
@@ -57,7 +61,7 @@ function Signin(props) {
                         theme: "light",
                         transition: Bounce,
                     });
-                    console.log(res.data.data);
+                    dispatch(loginSuccess(res.data));
                     navigate("/user-desh");
 
                 } else {
