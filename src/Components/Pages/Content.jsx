@@ -53,7 +53,7 @@ function Attendance(props) {
                         transition: Bounce,
                     });
                     console.log(res.data.data);
-                    navigate("/attendance");
+                    // navigate("/attendance");
 
                 } else {
                     toast.error(res.data.message, {
@@ -67,7 +67,7 @@ function Attendance(props) {
                         theme: "light",
                         transition: Bounce,
                     });
-                    navigate("/sign-up");
+                    navigate("/user-desh");
                 }
 
             }
@@ -89,8 +89,59 @@ function Attendance(props) {
 
         }
     };
-    const punchOut = () => {
+    const punchOut = async () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        const image = await faceapi.fetchImage(imageSrc);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
+        if (detections) {
+            try {
+                const res = await axios.post('http://localhost:8000/punchout', detections);
 
+                if (res.data.success === true) {
+                    toast.success(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    console.log(res.data.data);
+                } else {
+                    toast.error(res.data.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                }
+
+            }
+            catch (error) {
+                console.log(error);
+            }
+        } else {
+            toast.error("error to detect", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+
+        }
     }
     return (
         <Modal
@@ -109,46 +160,12 @@ function Attendance(props) {
                     videoConstraints={{ facingMode: 'user' }}
                 />
                 <button className="mt-5 items-center btn btn-outline-success md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch in</button>
-                <button className="mt-5 items-center btn btn-outline-danger ml-2 md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch Out</button>
+                <button className="mt-5 items-center btn btn-outline-danger ml-2 md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchOut}>Punch Out</button>
 
             </Modal.Body>
         </Modal>
     );
 }
-// function PunchOut(props) {
-
-//     const webcamRef = useRef(null);
-
-//     const punchOut = () => {
-
-//     }
-//     return (
-//         <Modal
-//             {...props}
-//             size="sm"
-//             aria-labelledby="contained-modal-title-vcenter"
-//             centered
-//         >
-//             <Modal.Header closeButton>
-//                 <Modal.Title id="contained-modal-title-vcenter">
-//                     Modal heading
-//                 </Modal.Title>
-//             </Modal.Header>
-//             <Modal.Body className='md:mx-auto text-center'>
-//                 <Webcam
-//                     audio={false}
-//                     ref={webcamRef}
-//                     screenshotFormat="image/jpeg"
-//                     width={400}
-//                     height={400}
-//                     videoConstraints={{ facingMode: 'user' }}
-//                 />
-
-//             </Modal.Body>
-//         </Modal>
-//     );
-// }
-
 const Content = () => {
     const userId = useSelector((state) => state.user.user.data._id);
     const userName = useSelector((state) => state.user.user.data.userName);

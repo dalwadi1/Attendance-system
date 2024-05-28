@@ -14,7 +14,7 @@ import { Bounce, toast } from 'react-toastify';
 import axios from 'axios';
 import { RotatingLines } from 'react-loader-spinner';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../Slice/userSlice.js';
+import { loginSuccess, Attendance } from '../../Slice/userSlice.js';
 
 
 function Signin(props) {
@@ -41,11 +41,13 @@ function Signin(props) {
     }, []);
 
     const handleLogin = async () => {
+        setLoading(true);
+
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
         if (detections) {
-            setLoading(true);
+
             try {
                 const res = await axios.post('http://localhost:8000/sign-in', detections);
 
@@ -62,6 +64,7 @@ function Signin(props) {
                         transition: Bounce,
                     });
                     dispatch(loginSuccess(res.data));
+                    dispatch(Attendance(res.Record));
                     navigate("/user-desh");
 
                 } else {
@@ -97,6 +100,7 @@ function Signin(props) {
                 theme: "light",
                 transition: Bounce,
             });
+            setLoading(false);
 
         }
     };

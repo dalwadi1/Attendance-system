@@ -3,8 +3,23 @@ import Sidebar from './Sidebar'
 import Content from './Content'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import Header from './Header'
+import { useSelector } from 'react-redux'
 
 const Attendance = () => {
+
+    const Record = useSelector((state) => state.user.user.Record);
+
+    if (Record === undefined) {
+        return "record not found"
+    } else {
+
+        const users = Record.date
+        console.log(users);
+    }
+
+
+
+    // console.log(userReco rd);
     return (
         <>
             <div className="container-xxl position-relative bg-white d-flex p-0">
@@ -20,62 +35,16 @@ const Attendance = () => {
                                 <table className="table text-start align-middle table-bordered table-hover mb-0">
                                     <thead>
                                         <tr className="text-dark">
-                                            <th scope="col"><input className="form-check-input" type="checkbox" /></th>
+                                            <th scope="col">s.no</th>
                                             <th scope="col">Date</th>
-                                            <th scope="col">Invoice</th>
-                                            <th scope="col">Customer</th>
-                                            <th scope="col">Amount</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Action</th>
+                                            <th scope="col">Punch In</th>
+                                            <th scope="col">Punch Out</th>
+                                            <th scope="col">Production</th>
+                                            <th scope="col">Brack</th>
+                                            <th scope="col">OverTime</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input className="form-check-input" type="checkbox" /></td>
-                                            <td>01 Jan 2045</td>
-                                            <td>INV-0123</td>
-                                            <td>Jhon Doe</td>
-                                            <td>$123</td>
-                                            <td>Paid</td>
-                                            <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input className="form-check-input" type="checkbox" /></td>
-                                            <td>01 Jan 2045</td>
-                                            <td>INV-0123</td>
-                                            <td>Jhon Doe</td>
-                                            <td>$123</td>
-                                            <td>Paid</td>
-                                            <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input className="form-check-input" type="checkbox" /></td>
-                                            <td>01 Jan 2045</td>
-                                            <td>INV-0123</td>
-                                            <td>Jhon Doe</td>
-                                            <td>$123</td>
-                                            <td>Paid</td>
-                                            <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input className="form-check-input" type="checkbox" /></td>
-                                            <td>01 Jan 2045</td>
-                                            <td>INV-0123</td>
-                                            <td>Jhon Doe</td>
-                                            <td>$123</td>
-                                            <td>Paid</td>
-                                            <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input className="form-check-input" type="checkbox" /></td>
-                                            <td>01 Jan 2045</td>
-                                            <td>INV-0123</td>
-                                            <td>Jhon Doe</td>
-                                            <td>$123</td>
-                                            <td>Paid</td>
-                                            <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                        </tr>
-                                    </tbody>
+
                                 </table>
                             </div>
                         </div>

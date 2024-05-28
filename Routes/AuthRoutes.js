@@ -4,6 +4,7 @@ import registeredUser from "../Models/Registration.js";
 import * as faceapi from 'face-api.js';
 import Auth from "../Models/Registration.js";
 import validateUser from "../Routes/Helper/Validate.js";
+import attendanceTable from '../Models/AttendanceModel.js';
 
 router.get('/', (req, res) => {
     res.send("welcom to the dalwadi's world")
@@ -60,6 +61,7 @@ router.post('/sign-in', async (req, res) => {
     const detectedDescriptorArray = Object.values(detectedDescriptors);
 
     const database = await registeredUser.find({});
+
     const matchThreshold = 0.6;
     let recognizedUser = null;
     let user
@@ -69,10 +71,15 @@ router.post('/sign-in', async (req, res) => {
         distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
 
         if (distance < matchThreshold) {
-            recognizedUser = `User ${i + 1, e}`;
+            recognizedUser = e;
             user = e
         }
     });
+
+    console.log(recognizedUser);
+    const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
+
+    console.log(atttendanceRecord);
     if (recognizedUser === null) {
         return res.json({
             success: false,
@@ -83,7 +90,8 @@ router.post('/sign-in', async (req, res) => {
         return res.json({
             success: true,
             message: "loged in successfully",
-            data: user
+            data: user,
+            Record: atttendanceRecord
         })
     }
 })
