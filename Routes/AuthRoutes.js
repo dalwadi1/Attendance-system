@@ -76,10 +76,7 @@ router.post('/sign-in', async (req, res) => {
         }
     });
 
-    console.log(recognizedUser);
-    const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
 
-    console.log(atttendanceRecord);
     if (recognizedUser === null) {
         return res.json({
             success: false,
@@ -87,6 +84,7 @@ router.post('/sign-in', async (req, res) => {
         })
     }
     else {
+        const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
         return res.json({
             success: true,
             message: "loged in successfully",
@@ -94,5 +92,13 @@ router.post('/sign-in', async (req, res) => {
             Record: atttendanceRecord
         })
     }
+})
+router.get('/getusers', async (req, res) => {
+
+    const users = await registeredUser.find({})
+
+    res.json({
+        users: users
+    })
 })
 export default router

@@ -4,6 +4,7 @@ import registeredUser from "../Models/Registration.js";
 import * as faceapi from 'face-api.js';
 import Attendance from "../Models/AttendanceModel.js";
 
+
 router.post('/punchin', async (req, res) => {
     try {
         const userimg = req.body;
@@ -34,14 +35,14 @@ router.post('/punchin', async (req, res) => {
             });
         }
         const currentDateTime = new Date();
-        const currentDate = currentDateTime.toISOString().split('T')[0];
+        const currentTime = currentDateTime.toTimeString().split(' ')[0]; // HH:MM:SS
+        const currentDate = currentDateTime.toISOString().split('T')[0]; // YYYY-MM-DD
 
         // Check if there is an attendance record for today
         let attendanceRecord = await Attendance.findOne({
             userId: recognizedUser._id,
             date: { $gte: new Date(currentDate), $lt: new Date(currentDate + 'T23:59:59Z') }
         });
-        // console.log(attendanceRecord);
 
         if (attendanceRecord) {
             if (attendanceRecord.punchOut) {
@@ -59,7 +60,7 @@ router.post('/punchin', async (req, res) => {
             const newAttendance = new Attendance({
                 userId: recognizedUser._id,
                 date: currentDateTime,
-                punchIn: currentDateTime
+                punchIn: currentTime
             });
             await newAttendance.save();
             return res.json({
@@ -68,7 +69,6 @@ router.post('/punchin', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error processing punch in:', error);
         res.json({ message: 'Internal server error' });
     }
 });
@@ -94,7 +94,6 @@ router.post('/punchout', async (req, res) => {
                 break;
             }
         }
-
         if (!recognizedUser) {
             return res.json({
                 success: false,
@@ -102,22 +101,21 @@ router.post('/punchout', async (req, res) => {
             });
         }
         const currentDateTime = new Date();
-        const currentDate = currentDateTime.toISOString().split('T')[0];
+        const currentTime = currentDateTime.toTimeString().split(' ')[0].toLocaleString('en-US', { hour: 'numeric', hour12: true }); // HH:MM:SS
+        const currentDate = currentDateTime.toISOString().split('T')[0]; // YYYY-MM-DD
 
         let attendanceRecord = await Attendance.findOne({
             userId: recognizedUser._id,
             date: { $gte: new Date(currentDate), $lt: new Date(currentDate + 'T23:59:59Z') }
         });
-
-        console.log(attendanceRecord);
         if (attendanceRecord) {
             if (!attendanceRecord.punchOut) {
-                attendanceRecord.punchOut = currentDateTime;
+                attendanceRecord.punchOut = currentTime;
                 await attendanceRecord.save();
                 return res.json({
                     success: true,
                     message: 'Punch out recorded',
-                    punchOut: currentDateTime
+                    punchOut: currentTime
                 });
             } else {
                 return res.json({
@@ -139,4 +137,11 @@ router.post('/punchout', async (req, res) => {
         });
     }
 });
+router.get('/getUserAttendance', async (req, res) => {
+
+    const attendance = await Attendance.find({})
+    res.json({
+        users: attendance
+    })
+})
 export default router

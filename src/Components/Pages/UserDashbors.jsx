@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Sidebar from "../Pages/Sidebar";
 import Content from "../Pages/Content";
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const UserDashbors = () => {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const islogedin = localStorage.getItem("islogedin", 1)
+
+        if (!islogedin) {
+            navigate("/")
+        }
+
+    }, [])
     return (
         <>
             <div className="container-xxl position-relative bg-white d-flex p-0">

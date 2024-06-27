@@ -5,9 +5,16 @@ import { GiHamburgerMenu } from 'react-icons/gi'
 import { RiFileEditFill } from 'react-icons/ri'
 import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Header = () => {
+
+    const navigate = useNavigate()
+    const logout = () => {
+        localStorage.removeItem("islogedin")
+        navigate('/')
+
+    }
     return (
         <>
             <nav className='flex items-center justify-between '>
@@ -51,7 +58,7 @@ const Header = () => {
                         <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" className="dropdown-item">My Profile</a>
                             <a href="#" className="dropdown-item">Settings</a>
-                            <a href="#" className="dropdown-item">Log Out</a>
+                            <a onClick={logout} className="dropdown-item cursor-pointer">Log Out</a>
                         </div>
                     </div>
                 </div>

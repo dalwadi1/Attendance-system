@@ -3,10 +3,11 @@ import mongoose from "mongoose";
 const attendance = mongoose.Schema({
     userId: mongoose.Types.ObjectId,
     punchIn: {
-        type: Date
+        type: String,
+        required: true
     },
     punchOut: {
-        type: Date
+        type: String
     },
     date: {
         type: Date

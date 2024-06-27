@@ -10,9 +10,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
-import { useDispatch, useSelector } from 'react-redux'
 import { Bounce, toast } from 'react-toastify'
 import axios from 'axios'
+import { RotatingLines } from 'react-loader-spinner'
 
 function Attendance(props) {
 
@@ -32,7 +32,10 @@ function Attendance(props) {
         loadModels()
     }, []);
 
+    const [loading, setLoading] = useState(false);
     const punchin = async () => {
+        setLoading(true);
+
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
@@ -53,7 +56,7 @@ function Attendance(props) {
                         transition: Bounce,
                     });
                     console.log(res.data.data);
-                    // navigate("/attendance");
+                    navigate("/user-desh");
 
                 } else {
                     toast.error(res.data.message, {
@@ -73,6 +76,8 @@ function Attendance(props) {
             }
             catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
         } else {
             toast.error("error to detect", {
@@ -90,6 +95,7 @@ function Attendance(props) {
         }
     };
     const punchOut = async () => {
+        setLoading(true);
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
@@ -109,7 +115,6 @@ function Attendance(props) {
                         theme: "light",
                         transition: Bounce,
                     });
-                    console.log(res.data.data);
                 } else {
                     toast.error(res.data.message, {
                         position: "top-right",
@@ -127,6 +132,8 @@ function Attendance(props) {
             }
             catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
         } else {
             toast.error("error to detect", {
@@ -151,25 +158,43 @@ function Attendance(props) {
             centered
         >
             <Modal.Body className='md:mx-auto text-center'>
-                <Webcam
-                    audio={false}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    width={400}
-                    height={400}
-                    videoConstraints={{ facingMode: 'user' }}
-                />
-                <button className="mt-5 items-center btn btn-outline-success md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch in</button>
-                <button className="mt-5 items-center btn btn-outline-danger ml-2 md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchOut}>Punch Out</button>
+                {loading ? (
+                    <RotatingLines
+                        visible={true}
+                        height="96"
+                        width="96"
+                        color="grey"
+                        strokeWidth="5"
+                        animationDuration="0.75"
+                        ariaLabel="rotating-lines-loading"
+                    />
+                ) : (
+                    <>
+                        <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            width={400}
+                            height={400}
+                            videoConstraints={{ facingMode: 'user' }}
+                        />
+                        <button className="mt-5 items-center btn btn-outline-success md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchin}>Punch in</button>
+                        <button className="mt-5 items-center btn btn-outline-danger ml-2 md:text-lg rounded-full xs:w-32 text-sm py-2" type="submit" style={{ fontFamily: 'Josefin Sans' }} onClick={punchOut}>Punch Out</button>
 
+                    </>
+                )}
             </Modal.Body>
         </Modal>
     );
 }
 const Content = () => {
-    const userId = useSelector((state) => state.user.user.data._id);
-    const userName = useSelector((state) => state.user.user.data.userName);
-    const userFace = useSelector((state) => state.user.user.data.faceDescriptor);
+
+    const navigate = useNavigate()
+    const logout = () => {
+        localStorage.removeItem("islogedin")
+        navigate('/')
+
+    }
     const [AttendanceIn, setAttendanceIn] = useState(false);
     return (
         <>
@@ -190,7 +215,7 @@ const Content = () => {
                                         <div className="bg-success rounded-circle border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                                     </div>
                                     <div className="ms-3">
-                                        <h6 className="mb-0 text-black">{userName}</h6>
+                                        <h6 className="mb-0 text-black"></h6>
                                         <span>Admin</span>
                                     </div>
                                 </div>
@@ -221,12 +246,12 @@ const Content = () => {
                         <div className="nav-item dropdown ">
                             <a href="#" className="nav-link dropdown-toggle items-center" data-bs-toggle="dropdown" style={{ "display": "flex" }}>
                                 <img className="rounded-circle me-lg-2" src="img/user.jpg" alt="" style={{ "width": "40px", "height": "40px" }} />
-                                <span className="d-none d-lg-inline-flex">{userName}</span>
+                                <span className="d-none d-lg-inline-flex"></span>
                             </a>
                             <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                                 <a href="#" className="dropdown-item">My Profile</a>
                                 <a href="#" className="dropdown-item">Settings</a>
-                                <a href="#" className="dropdown-item">Log Out</a>
+                                <a onClick={logout} className="dropdown-item cursor-pointer">Log Out</a>
                             </div>
                         </div>
                     </div>
@@ -353,7 +378,7 @@ const Content = () => {
                             <table className="table text-start align-middle table-bordered table-hover mb-0">
                                 <thead>
                                     <tr className="text-dark">
-                                        <th scope="col"><input className="form-check-input" type="checkbox" /></th>
+                                        <th scope="col">s.No</th>
                                         <th scope="col">Date</th>
                                         <th scope="col">Invoice</th>
                                         <th scope="col">Customer</th>
@@ -364,43 +389,7 @@ const Content = () => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input className="form-check-input" type="checkbox" /></td>
-                                        <td>01 Jan 2045</td>
-                                        <td>INV-0123</td>
-                                        <td>Jhon Doe</td>
-                                        <td>$123</td>
-                                        <td>Paid</td>
-                                        <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input className="form-check-input" type="checkbox" /></td>
-                                        <td>01 Jan 2045</td>
-                                        <td>INV-0123</td>
-                                        <td>Jhon Doe</td>
-                                        <td>$123</td>
-                                        <td>Paid</td>
-                                        <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input className="form-check-input" type="checkbox" /></td>
-                                        <td>01 Jan 2045</td>
-                                        <td>INV-0123</td>
-                                        <td>Jhon Doe</td>
-                                        <td>$123</td>
-                                        <td>Paid</td>
-                                        <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input className="form-check-input" type="checkbox" /></td>
-                                        <td>01 Jan 2045</td>
-                                        <td>INV-0123</td>
-                                        <td>Jhon Doe</td>
-                                        <td>$123</td>
-                                        <td>Paid</td>
-                                        <td><a className="btn btn-sm btn-primary" href="">Detail</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input className="form-check-input" type="checkbox" /></td>
+                                        <td>1</td>
                                         <td>01 Jan 2045</td>
                                         <td>INV-0123</td>
                                         <td>Jhon Doe</td>

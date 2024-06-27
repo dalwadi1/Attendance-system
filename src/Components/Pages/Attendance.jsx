@@ -1,25 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 import Content from './Content'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import Header from './Header'
-import { useSelector } from 'react-redux'
+import axios from 'axios'
 
 const Attendance = () => {
-
-    const Record = useSelector((state) => state.user.user.Record);
-
-    if (Record === undefined) {
-        return "record not found"
-    } else {
-
-        const users = Record.date
-        console.log(users);
-    }
+    const [attendanc, setAttendance] = useState([]);
 
 
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/getUserAttendance');
+                setAttendance(response.data.users);
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchUsers()
 
-    // console.log(userReco rd);
+    }, [attendanc]);
     return (
         <>
             <div className="container-xxl position-relative bg-white d-flex p-0">
@@ -44,7 +46,24 @@ const Attendance = () => {
                                             <th scope="col">OverTime</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        {
+                                            attendanc.map((e, i) => {
+                                                return (
+                                                    <tr key={e._id}>
+                                                        <td>{i}</td>
+                                                        <td>{e.date.slice(8, 10) + '/' + e.date.slice(5, 7) + '/' + e.date.slice(0, 4)}</td>
+                                                        <td>{e.punchIn}</td>
+                                                        <td>{e.punchOut}</td>
+                                                        <td>9 hours</td>
+                                                        <td>1 hours</td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
 
+
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
