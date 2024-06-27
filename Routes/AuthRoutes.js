@@ -5,6 +5,8 @@ import * as faceapi from 'face-api.js';
 import Auth from "../Models/Registration.js";
 import validateUser from "../Routes/Helper/Validate.js";
 import attendanceTable from '../Models/AttendanceModel.js';
+import jwt from "jsonwebtoken";
+import { createToken } from './Helper/token.js';
 
 router.get('/', (req, res) => {
     res.send("welcom to the dalwadi's world")
@@ -55,11 +57,13 @@ router.post('/sign-in', async (req, res) => {
     var distance;
     const detectedDescriptors = userimg.descriptor;
 
+
+
     const detectedDescriptorArray = Object.values(detectedDescriptors);
 
     const database = await registeredUser.find({});
 
-    const matchThreshold = 0.6;
+    const matchThreshold = 0.5;
     let recognizedUser = null;
     let user
 
@@ -67,7 +71,9 @@ router.post('/sign-in', async (req, res) => {
         const databaseDescriptors = e.faceDescriptor;
         distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
 
+        console.log(distance);
         if (distance < matchThreshold) {
+            console.log(e);
             recognizedUser = e;
             user = e
         }
@@ -80,7 +86,12 @@ router.post('/sign-in', async (req, res) => {
         })
     }
     else {
-        const token = Math.random().toString(36).slice(2);
+        const payload = {
+            id: user.id,
+            username: user.userName
+        }
+
+        const token = createToken(payload);
         const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
         return res.json({
             success: true,
@@ -91,11 +102,30 @@ router.post('/sign-in', async (req, res) => {
         })
     }
 })
+router.post('/profile', async (req, res) => {
+    const token = req.body.token
+
+    const decoded = jwt.verify(token, 'Dalwadi')
+
+    const userData = await registeredUser.findById({ _id: decoded.id });
+
+    if (userData) {
+        res.json({
+            users: userData
+        })
+    } else {
+        res.json({
+            users: "userData"
+        })
+    }
+
+})
 router.get('/getusers', async (req, res) => {
 
     const { token } = req.body
 
     console.log(token);
+
 
     const users = await registeredUser.find({})
 

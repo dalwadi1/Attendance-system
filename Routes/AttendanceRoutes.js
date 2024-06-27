@@ -3,6 +3,8 @@ const router = express.Router();
 import registeredUser from "../Models/Registration.js";
 import * as faceapi from 'face-api.js';
 import Attendance from "../Models/AttendanceModel.js";
+import jwt from "jsonwebtoken";
+import mongoose from 'mongoose';
 
 
 router.post('/punchin', async (req, res) => {
@@ -137,9 +139,30 @@ router.post('/punchout', async (req, res) => {
         });
     }
 });
-router.get('/getUserAttendance', async (req, res) => {
+router.post('/getUserAttendance', async (req, res) => {
 
-    const attendance = await Attendance.find({})
+    const token = req.body.token
+    console.log(token);
+
+    const decoded = jwt.verify(token, 'Dalwadi')
+
+    const userId = new mongoose.Types.ObjectId(decoded.id)
+
+    const attendance = await Attendance.aggregate([
+        {
+            $match: {
+                userId: userId
+            }
+        },
+        {
+            $lookup: {
+                from: 'registers',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+            }
+        }
+    ])
     res.json({
         users: attendance
     })

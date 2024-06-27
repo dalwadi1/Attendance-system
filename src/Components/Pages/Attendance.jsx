@@ -12,7 +12,7 @@ const Attendance = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/getUserAttendance', token);
+                const response = await axios.post('http://localhost:8000/getUserAttendance', { token });
                 setAttendance(response.data.users);
             } catch (error) {
                 console.log(error);
@@ -47,7 +47,7 @@ const Attendance = () => {
                                     </thead>
                                     <tbody>
                                         {
-                                            attendanc.map((e, i) => {
+                                            attendanc === null ? ' ' : attendanc.map((e, i) => {
                                                 return (
                                                     <tr key={e._id}>
                                                         <td>{i}</td>

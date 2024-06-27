@@ -5,10 +5,11 @@ import { GiHamburgerMenu } from 'react-icons/gi'
 import { RiFileEditFill } from 'react-icons/ri'
 import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
+import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 
 const Header = () => {
-
+    const user = useSelector((state) => state.user.user);
     const navigate = useNavigate()
     const logout = () => {
         localStorage.removeItem("islogedin")
@@ -33,7 +34,7 @@ const Header = () => {
                                     <div className="bg-success rounded-circle border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                                 </div>
                                 <div className="ms-3">
-                                    <h6 className="mb-0">Jhon Doe</h6>
+                                    <h6 className="mb-0">{user === null ? '' : user.user.userName}</h6>
                                     <span>Admin</span>
                                 </div>
                             </div>
@@ -53,7 +54,7 @@ const Header = () => {
                     <div className="nav-item dropdown ">
                         <a href="#" className="nav-link dropdown-toggle items-center" data-bs-toggle="dropdown" style={{ "display": "flex" }}>
                             <img className="rounded-circle me-lg-2" src="img/user.jpg" alt="" style={{ "width": "40px", "height": "40px" }} />
-                            <span className="d-none d-lg-inline-flex">John Doe</span>
+                            <span className="d-none d-lg-inline-flex">{user === null ? '' : user.user.userName}</span>
                         </a>
                         <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" className="dropdown-item">My Profile</a>

@@ -12,13 +12,19 @@ import * as faceapi from 'face-api.js';
 import { Bounce, toast } from 'react-toastify'
 import axios from 'axios'
 import { RotatingLines } from 'react-loader-spinner'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { loginSuccess } from '../../Slice/userSlice';
 
 function Attendance(props) {
 
-    const navigate = useNavigate()
+    const token = localStorage.getItem('token')
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
 
     const webcamRef = useRef(null);
+
+
 
     useEffect(() => {
         const loadModels = async () => {
@@ -29,7 +35,13 @@ function Attendance(props) {
                 await faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
             ]);
         };
-        loadModels()
+        const userProfile = async () => {
+            const res = await axios.post('http://localhost:8000/profile', { token })
+            dispatch(loginSuccess({ user: res.data.users }))
+
+        }
+        loadModels();
+        userProfile()
     }, []);
 
     const [loading, setLoading] = useState(false);
@@ -192,7 +204,6 @@ const Content = () => {
     const user = useSelector((state) => state.user.user);
 
     console.log(user);
-
     const navigate = useNavigate()
     const logout = () => {
         localStorage.removeItem("token")
@@ -250,7 +261,7 @@ const Content = () => {
                         <div className="nav-item dropdown ">
                             <a href="#" className="nav-link dropdown-toggle items-center" data-bs-toggle="dropdown" style={{ "display": "flex" }}>
                                 <img className="rounded-circle me-lg-2" src="img/user.jpg" alt="" style={{ "width": "40px", "height": "40px" }} />
-                                <span className="d-none d-lg-inline-flex">{user === null ? ' ' : user.userName}</span>
+                                <span className="d-none d-lg-inline-flex">{user === null ? '' : user.user.userName}</span>
                             </a>
                             <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                                 <a href="#" className="dropdown-item">My Profile</a>

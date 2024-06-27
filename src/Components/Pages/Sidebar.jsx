@@ -6,8 +6,10 @@ import { SiGoogleforms } from 'react-icons/si'
 import { SlCalender } from 'react-icons/sl'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { loginSuccess } from '../../Slice/userSlice';
 
 const Sidebar = () => {
+    const user = useSelector((state) => state.user.user);
     // const userId = useSelector((state) => state.user.user.data._id);
     // const userName = useSelector((state) => state.user.user.data.userName);
     return (
@@ -24,7 +26,7 @@ const Sidebar = () => {
                         </div>
                         <div className="ms-3">
                             <h6 className="mb-0"></h6>
-                            <span>Admin</span>
+                            <span>{user === null ? '' : user.user.userName}</span>
                         </div>
                     </div>
                     <div className="navbar-nav w-100">
