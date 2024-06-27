@@ -7,7 +7,7 @@ const UserDashbors = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const islogedin = localStorage.getItem("islogedin", 1)
+        const islogedin = localStorage.getItem("token")
 
         if (!islogedin) {
             navigate("/")

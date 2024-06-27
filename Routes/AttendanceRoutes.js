@@ -6,27 +6,26 @@ import Attendance from "../Models/AttendanceModel.js";
 
 
 router.post('/punchin', async (req, res) => {
+    // console.log(req.body);
     try {
         const userimg = req.body;
         const detectedDescriptors = userimg.descriptor;
         const detectedDescriptorArray = Object.values(detectedDescriptors);
         const matchThreshold = 0.6;
         let recognizedUser = null;
-
-        // Fetch all registered users from the database
+        let user;
         const database = await registeredUser.find({});
 
-        // Compare detected face descriptor with each user in the database
-        for (let i = 0; i < database.length; i++) {
-            const user = database[i];
-            const databaseDescriptors = user.faceDescriptor;
-            const distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
+
+        database.forEach((e, i) => {
+            const databaseDescriptors = e.faceDescriptor;
+            let distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
 
             if (distance < matchThreshold) {
-                recognizedUser = user;
-                break;
+                recognizedUser = e;
+                user = e;
             }
-        }
+        });
 
         if (!recognizedUser) {
             return res.json({
@@ -81,19 +80,20 @@ router.post('/punchout', async (req, res) => {
         const detectedDescriptorArray = Object.values(detectedDescriptors);
         const matchThreshold = 0.6;
         let recognizedUser = null;
+        let user;
+
 
         const database = await registeredUser.find({});
 
-        for (let i = 0; i < database.length; i++) {
-            const user = database[i];
-            const databaseDescriptors = user.faceDescriptor;
-            const distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
+        database.forEach((e, i) => {
+            const databaseDescriptors = e.faceDescriptor;
+            let distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
 
             if (distance < matchThreshold) {
-                recognizedUser = user;
-                break;
+                recognizedUser = e;
+                user = e;
             }
-        }
+        });
         if (!recognizedUser) {
             return res.json({
                 success: false,

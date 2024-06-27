@@ -7,21 +7,20 @@ import axios from 'axios'
 
 const Attendance = () => {
     const [attendanc, setAttendance] = useState([]);
-
+    const token = localStorage.getItem('token')
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/getUserAttendance');
+                const response = await axios.get('http://localhost:8000/getUserAttendance', token);
                 setAttendance(response.data.users);
-                console.log(response);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchUsers()
 
-    }, [attendanc]);
+    }, []);
     return (
         <>
             <div className="container-xxl position-relative bg-white d-flex p-0">

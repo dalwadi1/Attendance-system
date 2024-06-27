@@ -34,12 +34,9 @@ router.post('/sign-up', async (req, res) => {
                 message: 'Email Address allready Exist!'
             })
         } else {
-            const token = Math.random().toString(36).slice(2);
-
             const register = Auth({
                 userName: username,
                 email: useremail,
-                token: token,
                 faceDescriptor: result,
             })
             const data = register.save()
@@ -76,7 +73,6 @@ router.post('/sign-in', async (req, res) => {
         }
     });
 
-
     if (recognizedUser === null) {
         return res.json({
             success: false,
@@ -84,16 +80,22 @@ router.post('/sign-in', async (req, res) => {
         })
     }
     else {
+        const token = Math.random().toString(36).slice(2);
         const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
         return res.json({
             success: true,
             message: "loged in successfully",
             data: user,
+            token: token,
             Record: atttendanceRecord
         })
     }
 })
 router.get('/getusers', async (req, res) => {
+
+    const { token } = req.body
+
+    console.log(token);
 
     const users = await registeredUser.find({})
 

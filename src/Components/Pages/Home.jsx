@@ -13,17 +13,15 @@ import Webcam from 'react-webcam';
 import { Bounce, toast } from 'react-toastify';
 import axios from 'axios';
 import { RotatingLines } from 'react-loader-spinner';
+import { useDispatch } from 'react-redux'
+import { loginSuccess } from '../../Slice/userSlice';
 
 function Signin(props) {
+    const dispatch = useDispatch();
+
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
     const webcamRef = useRef(null);
-    var [userData, setUserData] = useState({
-        username: '',
-        useremail: '',
-        password: '',
-
-    });
     useEffect(() => {
         const loadModels = async () => {
             await Promise.all([
@@ -37,6 +35,7 @@ function Signin(props) {
     }, []);
 
     const handleLogin = async () => {
+
         setLoading(true);
 
         const imageSrc = webcamRef.current.getScreenshot();
@@ -59,8 +58,9 @@ function Signin(props) {
                         theme: "light",
                         transition: Bounce,
                     });
-
-                    localStorage.setItem("islogedin", 1)
+                    const userDeta = res.data.data
+                    dispatch(loginSuccess({ user: userDeta }))
+                    localStorage.setItem("token", res.data.token)
                     navigate("/user-desh");
 
                 } else {
@@ -148,6 +148,7 @@ function Signin(props) {
     );
 }
 const Home = () => {
+
     const [signin, setSignin] = useState(false);
     return (
         <>
