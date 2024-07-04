@@ -60,8 +60,6 @@ const Attendance = () => {
                                                 )
                                             })
                                         }
-
-
                                     </tbody>
                                 </table>
                             </div>

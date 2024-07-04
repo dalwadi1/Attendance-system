@@ -36,16 +36,19 @@ router.post('/sign-up', async (req, res) => {
                 message: 'Email Address allready Exist!'
             })
         } else {
+            const token = Math.random().toString(36).slice(2);
             const register = Auth({
                 userName: username,
                 email: useremail,
+                token, token,
                 faceDescriptor: result,
             })
             const data = register.save()
             if (data) {
                 res.json({
                     success: true,
-                    message: 'You are successfully registered!'
+                    message: 'You are successfully registered!',
+                    userToken: token
                 })
             }
         }
@@ -53,9 +56,10 @@ router.post('/sign-up', async (req, res) => {
 })
 
 router.post('/sign-in', async (req, res) => {
-    const userimg = req.body;
+    const { detections, AuthToken } = req.body;
+
     var distance;
-    const detectedDescriptors = userimg.descriptor;
+    const detectedDescriptors = detections.descriptor;
 
 
 
@@ -71,9 +75,8 @@ router.post('/sign-in', async (req, res) => {
         const databaseDescriptors = e.faceDescriptor;
         distance = faceapi.euclideanDistance(detectedDescriptorArray, databaseDescriptors);
 
-        console.log(distance);
+        // console.log(distance);
         if (distance < matchThreshold) {
-            console.log(e);
             recognizedUser = e;
             user = e
         }
@@ -86,20 +89,31 @@ router.post('/sign-in', async (req, res) => {
         })
     }
     else {
-        const payload = {
-            id: user.id,
-            username: user.userName
+        const UserData = await registeredUser.findOne({ token: AuthToken })
+
+        if (UserData) {
+            const payload = {
+                id: UserData.id,
+                username: UserData.userName
+            }
+
+            const token = createToken(payload);
+            const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
+
+            return res.json({
+                success: true,
+                message: "loged in successfully",
+                data: user,
+                token: token,
+                Record: atttendanceRecord
+            })
+        } else {
+            return res.json({
+                success: true,
+                message: "try leter",
+            })
         }
 
-        const token = createToken(payload);
-        const atttendanceRecord = await attendanceTable.findOne({ userId: recognizedUser._id })
-        return res.json({
-            success: true,
-            message: "loged in successfully",
-            data: user,
-            token: token,
-            Record: atttendanceRecord
-        })
     }
 })
 router.post('/profile', async (req, res) => {
@@ -124,7 +138,7 @@ router.get('/getusers', async (req, res) => {
 
     const { token } = req.body
 
-    console.log(token);
+    // console.log(token);
 
 
     const users = await registeredUser.find({})

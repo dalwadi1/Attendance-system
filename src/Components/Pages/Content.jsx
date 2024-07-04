@@ -103,7 +103,7 @@ function Attendance(props) {
                 theme: "light",
                 transition: Bounce,
             });
-
+            setLoading(false);
         }
     };
     const punchOut = async () => {
@@ -140,7 +140,6 @@ function Attendance(props) {
                         transition: Bounce,
                     });
                 }
-
             }
             catch (error) {
                 console.log(error);
@@ -159,7 +158,7 @@ function Attendance(props) {
                 theme: "light",
                 transition: Bounce,
             });
-
+            setLoading(false);
         }
     }
     return (
@@ -231,7 +230,7 @@ const Content = () => {
                                     </div>
                                     <div className="ms-3">
                                         <h6 className="mb-0 text-black"></h6>
-                                        <span>Admin</span>
+                                        <span>{user === null ? '' : user.user.userName}</span>
                                     </div>
                                 </div>
                                 <div className="navbar-nav w-100">
@@ -264,8 +263,8 @@ const Content = () => {
                                 <span className="d-none d-lg-inline-flex">{user === null ? '' : user.user.userName}</span>
                             </a>
                             <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                                <a href="#" className="dropdown-item">My Profile</a>
-                                <a href="#" className="dropdown-item">Settings</a>
+                                {/* <a href="#" className="dropdown-item">My Profile</a>
+                                <a href="#" className="dropdown-item">Settings</a> */}
                                 <a onClick={logout} className="dropdown-item cursor-pointer">Log Out</a>
                             </div>
                         </div>
@@ -324,56 +323,21 @@ const Content = () => {
                         </div>
                         <div className="col-sm-12 col-md-6 col-xl-4">
                             <div className="h-100 bg-light rounded p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 className="mb-0">Time Sheet</h6>
-                                    <a href="">Show All</a>
-                                </div>
-                                <div className="d-flex mb-2">
-                                    <input className="form-control bg-transparent" type="text" placeholder="Enter task" />
-                                    <button type="button" className="btn btn-primary ms-2">Add</button>
-                                </div>
-                                <div className="d-flex align-items-center border-bottom py-2">
-                                    <input className="form-check-input m-0" type="checkbox" />
-                                    <div className="w-100 ms-3">
-                                        <div className="d-flex w-100 align-items-center justify-content-between">
-                                            <span>Short task goes here...</span>
-                                            <button className="btn btn-sm"><i className="fa fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center border-bottom py-2">
-                                    <input className="form-check-input m-0" type="checkbox" />
-                                    <div className="w-100 ms-3">
-                                        <div className="d-flex w-100 align-items-center justify-content-between">
-                                            <span>Short task goes here...</span>
-                                            <button className="btn btn-sm"><i className="fa fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center border-bottom py-2">
-                                    <input className="form-check-input m-0" type="checkbox" defaultChecked />
-                                    <div className="w-100 ms-3">
-                                        <div className="d-flex w-100 align-items-center justify-content-between">
-                                            <span><del>Short task goes here...</del></span>
-                                            <button className="btn btn-sm text-primary"><i className="fa fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center border-bottom py-2">
-                                    <input className="form-check-input m-0" type="checkbox" />
-                                    <div className="w-100 ms-3">
-                                        <div className="d-flex w-100 align-items-center justify-content-between">
-                                            <span>Short task goes here...</span>
-                                            <button className="btn btn-sm"><i className="fa fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center pt-2">
-                                    <input className="form-check-input m-0" type="checkbox" />
-                                    <div className="w-100 ms-3">
-                                        <div className="d-flex w-100 align-items-center justify-content-between">
-                                            <span>Short task goes here...</span>
-                                            <button className="btn btn-sm"><i className="fa fa-times"></i></button>
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
                                         </div>
                                     </div>
                                 </div>
@@ -383,7 +347,7 @@ const Content = () => {
                 </div>
 
 
-                <div className="container-fluid pt-4 px-4">
+                {/* <div className="container-fluid pt-4 px-4">
                     <div className="bg-light text-center rounded p-4">
                         <div className="d-flex align-items-center justify-content-between mb-4">
                             <h6 className="mb-0">Recent Salse</h6>
@@ -416,7 +380,7 @@ const Content = () => {
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </>
     )

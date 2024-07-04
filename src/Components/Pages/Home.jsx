@@ -39,10 +39,14 @@ function Signin(props) {
         const imageSrc = webcamRef.current.getScreenshot();
         const image = await faceapi.fetchImage(imageSrc);
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceExpressions().withFaceDescriptor()
+        const Authenticate = {
+            detections: detections,
+            AuthToken: localStorage.getItem('userToken')
+        }
         if (detections) {
 
             try {
-                const res = await axios.post('http://localhost:8000/sign-in', detections);
+                const res = await axios.post('http://localhost:8000/sign-in', Authenticate);
 
                 if (res.data.success === true) {
                     toast.success(res.data.message, {

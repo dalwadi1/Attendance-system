@@ -142,27 +142,15 @@ router.post('/punchout', async (req, res) => {
 router.post('/getUserAttendance', async (req, res) => {
 
     const token = req.body.token
-    console.log(token);
+    // console.log(token);
 
     const decoded = jwt.verify(token, 'Dalwadi')
 
     const userId = new mongoose.Types.ObjectId(decoded.id)
 
-    const attendance = await Attendance.aggregate([
-        {
-            $match: {
-                userId: userId
-            }
-        },
-        {
-            $lookup: {
-                from: 'registers',
-                localField: 'userId',
-                foreignField: '_id',
-                as: 'user'
-            }
-        }
-    ])
+    const attendance = await Attendance.find({
+        userId: userId
+    })
     res.json({
         users: attendance
     })

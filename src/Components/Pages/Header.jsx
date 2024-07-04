@@ -35,7 +35,6 @@ const Header = () => {
                                 </div>
                                 <div className="ms-3">
                                     <h6 className="mb-0">{user === null ? '' : user.user.userName}</h6>
-                                    <span>Admin</span>
                                 </div>
                             </div>
                             <div className="navbar-nav w-100">
@@ -58,7 +57,7 @@ const Header = () => {
                         </a>
                         <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" className="dropdown-item">My Profile</a>
-                            <a href="#" className="dropdown-item">Settings</a>
+                            {/* <a href="#" className="dropdown-item">Settings</a> */}
                             <a onClick={logout} className="dropdown-item cursor-pointer">Log Out</a>
                         </div>
                     </div>

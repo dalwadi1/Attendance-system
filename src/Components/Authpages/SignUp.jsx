@@ -64,6 +64,7 @@ const SignUp = () => {
                     theme: "light",
                     transition: Bounce,
                 });
+                localStorage.setItem('userToken', res.data.userToken)
 
                 navigate("/")
             } else {
